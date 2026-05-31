@@ -1,0 +1,31 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Dreame SF25 — DreameHome credentials",
+        "description": "Enter your DreameHome app account credentials (the same email and password you use in the Dreame mobile app).",
+        "data": {
+          "username": "DreameHome email",
+          "password": "Password",
+          "country": "Country code (e.g. DE, FR)"
+        }
+      },
+      "select_device": {
+        "title": "Select your SF25",
+        "description": "Choose the food composter from your DreameHome device list.",
+        "data": {
+          "device_id": "Device"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Could not connect to the DreameHome cloud. Check your internet connection.",
+      "invalid_auth": "Invalid credentials. Check your DreameHome email and password.",
+      "no_devices_found": "No devices found on this account."
+    },
+    "abort": {
+      "already_configured": "This device is already configured.",
+      "no_devices_found": "No DreameHome devices found on this account."
+    }
+  }
+}

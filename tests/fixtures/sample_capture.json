@@ -1,0 +1,75 @@
+{
+  "_comment": "Sanitized sample of real DreameHome MQTT properties_changed messages from a dreame.fwd.u2527 (SF25). Device/account identifiers are fake. Represents the start of a drying cycle followed by a heartbeat.",
+  "message_log": [
+    {
+      "ts": "20:04:17",
+      "topic": "/status/-100000000/EXAMPLEUID/dreame.fwd.u2527/eu/",
+      "payload": {
+        "id": 1,
+        "did": -100000000,
+        "data": {
+          "id": 1,
+          "method": "properties_changed",
+          "params": [
+            {"siid": 2, "piid": 1, "value": 1, "did": "-100000000"},
+            {"siid": 2, "piid": 2, "value": 0, "did": "-100000000"},
+            {"siid": 2, "piid": 3, "value": 0, "did": "-100000000"},
+            {"siid": 2, "piid": 5, "value": 0, "did": "-100000000"},
+            {"siid": 2, "piid": 10, "value": 1, "did": "-100000000"},
+            {"siid": 2, "piid": 11, "value": 360, "did": "-100000000"},
+            {"siid": 1, "piid": 6, "value": "m01", "did": "-100000000"},
+            {"siid": 3, "piid": 14, "value": 0, "did": "-100000000"}
+          ]
+        }
+      }
+    },
+    {
+      "ts": "20:05:17",
+      "topic": "/status/-100000000/EXAMPLEUID/dreame.fwd.u2527/eu/",
+      "payload": {
+        "id": 2,
+        "did": -100000000,
+        "data": {
+          "id": 2,
+          "method": "properties_changed",
+          "params": [
+            {"siid": 2, "piid": 11, "value": 354, "did": "-100000000"},
+            {"siid": 3, "piid": 14, "value": 15, "did": "-100000000"}
+          ]
+        }
+      }
+    },
+    {
+      "ts": "20:06:00",
+      "topic": "/status/-100000000/EXAMPLEUID/dreame.fwd.u2527/eu/",
+      "payload": {
+        "id": 3,
+        "did": -100000000,
+        "data": {
+          "id": 3,
+          "method": "properties_changed",
+          "params": [
+            {"siid": 6, "piid": 11, "value": 1, "did": "-100000000"},
+            {"siid": 2, "piid": 2, "value": 1, "did": "-100000000"}
+          ]
+        }
+      }
+    },
+    {
+      "ts": "20:06:30",
+      "topic": "/status/-100000000/EXAMPLEUID/dreame.fwd.u2527/eu/",
+      "payload": {
+        "id": 4,
+        "did": -100000000,
+        "data": {
+          "id": 4,
+          "method": "properties_changed",
+          "params": [
+            {"siid": 6, "piid": 11, "value": 0, "did": "-100000000"},
+            {"siid": 2, "piid": 2, "value": 0, "did": "-100000000"}
+          ]
+        }
+      }
+    }
+  ]
+}
