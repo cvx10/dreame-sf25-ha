@@ -42,8 +42,15 @@ class SF25SensorDescription(SensorEntityDescription):
     value_fn: Callable[[Any], Any] | None = None
 
 
-def _map_or_raw(mapping: dict) -> Callable[[Any], Any]:
-    return lambda v: mapping.get(v, f"unknown_{v}") if v is not None else None
+def _map_enum(mapping: dict) -> Callable[[Any], Any]:
+    """Map a coded value to its name for an ENUM sensor.
+
+    Unknown/unmapped codes return None (HA state 'unknown') rather than a
+    synthetic string: an ENUM sensor raises if its state is not in `options`,
+    which would crash the coordinator's listener update. The raw code is still
+    visible in debug logs and (for 1/6) via the Program sensor.
+    """
+    return lambda v: mapping.get(v) if v is not None else None
 
 
 SENSOR_DESCRIPTIONS: tuple[SF25SensorDescription, ...] = (
@@ -53,7 +60,7 @@ SENSOR_DESCRIPTIONS: tuple[SF25SensorDescription, ...] = (
         icon="mdi:state-machine",
         device_class=SensorDeviceClass.ENUM,
         options=list(STATUS_CODES.values()),
-        value_fn=_map_or_raw(STATUS_CODES),
+        value_fn=_map_enum(STATUS_CODES),
     ),
     SF25SensorDescription(
         key=PROP_RUN_FLAG,
@@ -61,7 +68,7 @@ SENSOR_DESCRIPTIONS: tuple[SF25SensorDescription, ...] = (
         icon="mdi:play-pause",
         device_class=SensorDeviceClass.ENUM,
         options=list(RUN_FLAG_CODES.values()),
-        value_fn=_map_or_raw(RUN_FLAG_CODES),
+        value_fn=_map_enum(RUN_FLAG_CODES),
     ),
     SF25SensorDescription(
         key=PROP_MODE,

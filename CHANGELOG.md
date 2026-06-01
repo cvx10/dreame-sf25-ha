@@ -4,6 +4,15 @@ All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/);
 this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.3.1] — 2026-06-01
+
+### Fixed
+- ENUM sensors (Status / Run State / Mode) now return `None` for any unmapped
+  code instead of a synthetic `unknown_<n>` string. An out-of-`options` value
+  made the ENUM sensor raise, which crashed the coordinator's listener update
+  ("Unexpected error updating listener"). This was hit when status code `3`
+  arrived on stop. Unmapped codes now show as `unknown` without errors.
+
 ## [0.3.0] — 2026-06-01
 
 ### Changed
