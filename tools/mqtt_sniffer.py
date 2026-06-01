@@ -62,8 +62,26 @@ def main() -> None:
     print()
 
     username = os.environ.get("DREAME_USER") or input("DreameHome email: ").strip()
-    password = os.environ.get("DREAME_PASS") or getpass.getpass("Password: ")
-    country = (os.environ.get("DREAME_COUNTRY") or input("Country code [DE]: ").strip().upper() or "DE")
+
+    # Password resolution order: env var, password file (robust against shell
+    # special chars), then interactive prompt. DREAME_PASS_FILE is read raw and
+    # only trailing newlines are stripped (passwords may contain spaces).
+    password = os.environ.get("DREAME_PASS")
+    if not password:
+        pass_file = os.environ.get("DREAME_PASS_FILE")
+        if pass_file and os.path.exists(pass_file):
+            with open(pass_file, "r") as f:
+                password = f.read().rstrip("\r\n")
+    if not password:
+        if sys.stdin.isatty():
+            password = getpass.getpass("Password: ")
+        else:
+            print("ERROR: no password. Set DREAME_PASS or DREAME_PASS_FILE.")
+            sys.exit(2)
+
+    country = (os.environ.get("DREAME_COUNTRY") or "DE").upper()
+    if not os.environ.get("DREAME_COUNTRY") and sys.stdin.isatty():
+        country = (input("Country code [DE]: ").strip().upper() or "DE")
 
     print("\nLogging in…")
     client = DreameCloudClient(username, password, country)
