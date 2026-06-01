@@ -11,7 +11,7 @@ from homeassistant.components.sensor import (
     SensorStateClass,
 )
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import PERCENTAGE, UnitOfTemperature, UnitOfTime
+from homeassistant.const import EntityCategory, PERCENTAGE, UnitOfTemperature, UnitOfTime
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
@@ -22,7 +22,9 @@ from .const import (
     MANUFACTURER,
     MODEL,
     MODE_CODES,
+    MODE_DURATIONS,
     PROP_MODE,
+    PROP_PROGRAM,
     PROP_RUN_FLAG,
     PROP_STATUS,
     PROP_TEMPERATURE,
@@ -67,7 +69,16 @@ SENSOR_DESCRIPTIONS: tuple[SF25SensorDescription, ...] = (
         icon="mdi:leaf",
         device_class=SensorDeviceClass.ENUM,
         options=list(MODE_CODES.values()),
-        value_fn=lambda v: MODE_CODES.get(v, v),
+        value_fn=lambda v: MODE_CODES.get(v) if v is not None else None,
+    ),
+    SF25SensorDescription(
+        key=PROP_PROGRAM,
+        name="Program",
+        icon="mdi:tune-variant",
+        entity_category=EntityCategory.DIAGNOSTIC,
+        # 1/6 is a raw program/recipe code (e.g. "m01"); meaning of the suffix
+        # is not yet confirmed, so expose it verbatim.
+        value_fn=lambda v: v,
     ),
     SF25SensorDescription(
         key=PROP_TIME_REMAINING,
@@ -156,8 +167,12 @@ class DreameSF25ProgressSensor(_BaseSF25Sensor):
 
     @property
     def native_value(self) -> int | None:
-        remaining = (self.coordinator.data or {}).get(PROP_TIME_REMAINING)
+        data = self.coordinator.data or {}
+        remaining = data.get(PROP_TIME_REMAINING)
         if remaining is None or remaining <= 0:
             return None
-        remaining = max(0, min(FULL_CYCLE_MINUTES, remaining))
-        return round((FULL_CYCLE_MINUTES - remaining) / FULL_CYCLE_MINUTES * 100)
+        # Pick the full duration for the current operation (drying=360, cleaning=90),
+        # falling back to the default. This keeps progress accurate per mode.
+        total = MODE_DURATIONS.get(data.get(PROP_MODE), FULL_CYCLE_MINUTES)
+        remaining = max(0, min(total, remaining))
+        return round((total - remaining) / total * 100)

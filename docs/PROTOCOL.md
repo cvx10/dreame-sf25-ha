@@ -49,31 +49,43 @@ A telemetry heartbeat (time + temperature) arrives roughly every 60 s; full stat
 blocks arrive on state changes (start/pause/stop/lid).
 
 ## Confirmed property map
-Verified by correlating MQTT messages with physical actions on 2026-05-31.
+Verified by correlating MQTT messages with physical actions during BOTH a
+drying cycle (2026-05-31) and a self-cleaning cycle (2026-06-01).
 
 | siid/piid | Meaning | Values |
 |-----------|---------|--------|
-| 1/6  | Mode (string) | `m01`=Séchage/Drying, `m02`=Nettoyage/Cleaning (presumed) |
-| 2/1  | Status | 1=running, 2=idle/paused |
+| 1/6  | Program/recipe code (string) | `m01` — constant across drying AND cleaning, so it is NOT the operation selector. Meaning of suffix unconfirmed. |
+| 2/1  | Status | 1=running, 2=idle, 3=finishing (seen transiently on stop) |
 | 2/2  | Lid alert | 0=ok, 1=lid open |
-| 2/3  | Cycle-active sub-state | 0=active, -1=stopped |
+| 2/3  | **Operation / mode** | **0=drying, 2=cleaning, -1=idle/stopped** |
 | 2/10 | Run flag | 1=running, 0=paused, -1=stopped |
-| 2/11 | Time remaining (min) | counts down 1/min; **frozen while paused**; 0 on stop; 360 at fresh start |
-| 3/14 | Temperature (°C) | 0 at cold start, rises during heating (saw up to 127) |
+| 2/11 | Time remaining (min) | counts down 1/min; **frozen while paused**; 0 on stop; **360 for drying, 90 for cleaning** at fresh start |
+| 3/14 | Temperature (°C) | 0 at cold start; rises during drying (saw up to 127); stays 0 during cleaning |
 | 6/11 | Lid/cover | 1=open, 0=closed |
 | 1/65 | unknown | seen once = 42 (event? RSSI?) |
 | 2/5  | unknown | always 0 so far |
 
+> **Correction (2026-06-01):** Earlier we assumed `1/6` was the mode
+> (`m01`=drying, `m02`=cleaning). The cleaning cycle disproved this — `1/6`
+> stayed `m01` while the device cleaned. The real operation discriminator is
+> **`2/3`** (0=drying, 2=cleaning). `1/6` is exposed as a separate diagnostic
+> "Program" sensor.
+
+### Other MQTT message types (not `properties_changed`)
+- `_otc.info`: WiFi diagnostics — `{ap:{ssid, rssi, strength, channel}, model}`.
+  Candidate for a future WiFi signal sensor.
+
 ### Observed transitions
-- **Start** (idle→run): 2/1→1, 2/3→0, 2/10→1, 2/11→360, 3/14→0, 1/6=`m01`
+- **Drying start** (idle→run): 2/1→1, 2/3→0, 2/10→1, 2/11→360, 3/14→0, 1/6=`m01`
+- **Cleaning start** (idle→run): 2/1→1, 2/3→2, 2/10→1, 2/11→90, 1/6=`m01`
 - **Pause**: 2/1→2, 2/10→0, 2/11 frozen
 - **Resume**: 2/1→1, 2/10→1, 2/11 resumes
-- **Stop**: 2/11→0, 2/3→-1, 2/10→-1
+- **Stop**: 2/1→3 (briefly) then →2, 2/3→-1, 2/10→-1, 2/11→0
 - **Lid open**: 6/11→1, 2/2→1
 - **Lid close**: 6/11→0, 2/2→0
 
 ## Still unknown
-- `m02` value not yet captured (start a cleaning cycle to confirm)
-- 1/65, 2/5 meaning
+- Meaning of the `1/6` suffix (are there m02/m03 drying recipes?); 1/65, 2/5
+- Whether `2/3` has other values (e.g. 1 for a third operation)
 - The command/write channel (for start/stop/mode control) — HTTP relay gives 80001;
   commands likely need an MQTT publish to a request topic (not yet reverse-engineered).

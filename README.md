@@ -27,12 +27,13 @@ This integration therefore:
 
 | Entity | Type | Source (siid/piid) | Notes |
 |--------|------|--------------------|-------|
-| Status | sensor (enum) | 2/1 | `running` / `idle` |
+| Status | sensor (enum) | 2/1 | `running` / `idle` / `finishing` |
 | Run State | sensor (enum) | 2/10 | `running` / `paused` / `stopped` |
-| Mode | sensor (enum) | 1/6 | `drying` (`m01`), `cleaning` (`m02`) |
-| Time Remaining | sensor (min) | 2/11 | counts down; frozen while paused |
+| Mode | sensor (enum) | 2/3 | `drying` / `cleaning` / `idle` |
+| Program | sensor (diagnostic) | 1/6 | raw program code (e.g. `m01`) |
+| Time Remaining | sensor (min) | 2/11 | counts down; frozen while paused (drying 360, cleaning 90) |
 | Temperature | sensor (°C) | 3/14 | internal temperature |
-| Cycle Progress | sensor (%) | derived | from time remaining vs 360-min cycle |
+| Cycle Progress | sensor (%) | derived | from time remaining vs the per-mode cycle length |
 | Lid | binary_sensor (opening) | 6/11 | open / closed |
 | Lid Alert | binary_sensor (problem) | 2/2 | lid-open warning |
 

@@ -1,0 +1,125 @@
+================================================================
+  Dreame SF25 — MQTT Property Sniffer
+================================================================
+
+
+Logging in…
+Logged in. uid=HT567056
+Device: BurnThemAll (dreame.fwd.u2527, did=-117233825)
+
+MQTT broker: mqtts://10000.mt.eu.iot.dreame.tech:19973
+Subscribing to: /status/-117233825/HT567056/dreame.fwd.u2527/eu/
+
+/Users/jonathan/DreameSF25-HomeAssistantIntegration/tools/mqtt_sniffer.py:140: DeprecationWarning: Callback API version 1 is deprecated, update to latest version
+  mqttc = mqtt.Client(
+>>> Connected to MQTT broker!
+>>> Subscribed. Now go interact with your SF25!
+>>> Press buttons, start a cycle, open the lid…
+>>> Values will appear below. Ctrl+C when done.
+
+[19:01:36] properties_changed:
+         siid= 2 piid= 1  value=2
+         siid= 2 piid= 2  value=0
+         siid= 2 piid= 3  value=-1
+         siid= 2 piid= 5  value=0
+         siid= 2 piid=10  value=-1
+         siid= 2 piid=11  value=0
+[19:01:56] properties_changed:
+         siid= 2 piid= 1  value=1
+         siid= 2 piid= 2  value=0
+         siid= 2 piid= 3  value=2
+         siid= 2 piid= 5  value=0
+         siid= 2 piid=10  value=1
+         siid= 2 piid=11  value=90
+         siid= 1 piid= 6  value='m01'
+         siid= 3 piid=14  value=0
+[19:02:11] properties_changed:
+         siid= 2 piid= 1  value=3
+         siid= 2 piid= 2  value=0
+         siid= 2 piid= 3  value=-1
+         siid= 2 piid= 5  value=0
+         siid= 2 piid=10  value=-1
+         siid= 2 piid=11  value=0
+[19:02:13] properties_changed:
+         siid= 2 piid= 1  value=2
+         siid= 2 piid= 2  value=0
+         siid= 2 piid= 3  value=-1
+         siid= 2 piid= 5  value=0
+         siid= 2 piid=10  value=-1
+         siid= 2 piid=11  value=0
+[19:02:18] properties_changed:
+         siid= 6 piid=11  value=1
+         siid= 2 piid= 1  value=2
+         siid= 2 piid= 2  value=1
+         siid= 2 piid= 3  value=-1
+         siid= 2 piid=10  value=-1
+[19:03:00] /status/-117233825/HT567056/dreame.fwd.u2527/eu/ method=_otc.info: {"ap": {"ssid": "Pickle\\\\20Rick", "rssi": -73, "strength": 34, "channel": 1}, "model": "dreame.fwd.u2527"}
+[19:03:31] properties_changed:
+         siid= 6 piid=11  value=0
+         siid= 2 piid= 1  value=2
+         siid= 2 piid= 2  value=0
+         siid= 2 piid= 3  value=-1
+         siid= 2 piid=10  value=-1
+[19:03:34] properties_changed:
+         siid= 2 piid= 1  value=1
+         siid= 2 piid= 2  value=0
+         siid= 2 piid= 3  value=2
+         siid= 2 piid= 5  value=0
+         siid= 2 piid=10  value=1
+         siid= 2 piid=11  value=90
+         siid= 1 piid= 6  value='m01'
+         siid= 3 piid=14  value=0
+[19:04:33] properties_changed:
+         siid= 2 piid=11  value=89
+         siid= 3 piid=14  value=7
+[19:05:26] properties_changed:
+         siid= 1 piid=65  value=14
+[19:05:33] properties_changed:
+         siid= 2 piid=11  value=88
+         siid= 3 piid=14  value=13
+[19:06:33] properties_changed:
+         siid= 2 piid=11  value=87
+         siid= 3 piid=14  value=19
+[19:07:33] properties_changed:
+         siid= 2 piid=11  value=86
+         siid= 3 piid=14  value=24
+>>> Connected to MQTT broker!
+>>> Subscribed. Now go interact with your SF25!
+>>> Press buttons, start a cycle, open the lid…
+>>> Values will appear below. Ctrl+C when done.
+
+[19:09:33] properties_changed:
+         siid= 2 piid=11  value=84
+         siid= 3 piid=14  value=33
+[19:10:33] properties_changed:
+         siid= 2 piid=11  value=83
+         siid= 3 piid=14  value=35
+[19:11:33] properties_changed:
+         siid= 2 piid=11  value=82
+         siid= 3 piid=14  value=38
+[19:12:33] properties_changed:
+         siid= 2 piid=11  value=81
+         siid= 3 piid=14  value=40
+[19:13:33] properties_changed:
+         siid= 2 piid=11  value=80
+         siid= 3 piid=14  value=42
+[19:14:33] properties_changed:
+         siid= 2 piid=11  value=79
+         siid= 3 piid=14  value=44
+>>> Connected to MQTT broker!
+>>> Subscribed. Now go interact with your SF25!
+>>> Press buttons, start a cycle, open the lid…
+>>> Values will appear below. Ctrl+C when done.
+
+>>> MQTT connection failed with code 5
+    rc=1: wrong protocol | rc=4: bad user/pass | rc=5: not authorized
+>>> MQTT connection failed with code 5
+    rc=1: wrong protocol | rc=4: bad user/pass | rc=5: not authorized
+>>> MQTT connection failed with code 5
+    rc=1: wrong protocol | rc=4: bad user/pass | rc=5: not authorized
+>>> MQTT connection failed with code 5
+    rc=1: wrong protocol | rc=4: bad user/pass | rc=5: not authorized
+>>> MQTT connection failed with code 5
+    rc=1: wrong protocol | rc=4: bad user/pass | rc=5: not authorized
+>>> MQTT connection failed with code 5
+    rc=1: wrong protocol | rc=4: bad user/pass | rc=5: not authorized

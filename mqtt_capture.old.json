@@ -1,0 +1,1520 @@
+{
+  "observed_properties": {
+    "2_11": {
+      "siid": 2,
+      "piid": 11,
+      "values_seen": [
+        329,
+        328,
+        327,
+        326,
+        325,
+        324,
+        323,
+        322,
+        321,
+        320,
+        319,
+        318,
+        317,
+        316,
+        0,
+        360,
+        359,
+        358,
+        357,
+        356,
+        355,
+        354,
+        353,
+        352,
+        351,
+        350,
+        349,
+        348,
+        347,
+        346,
+        345,
+        344,
+        343,
+        342,
+        341,
+        340
+      ]
+    },
+    "3_14": {
+      "siid": 3,
+      "piid": 14,
+      "values_seen": [
+        98,
+        100,
+        102,
+        105,
+        108,
+        110,
+        113,
+        115,
+        117,
+        119,
+        121,
+        123,
+        125,
+        127,
+        0,
+        4,
+        6,
+        8,
+        10,
+        13,
+        15,
+        18,
+        20,
+        22,
+        25,
+        27,
+        29,
+        32,
+        34,
+        36,
+        38,
+        40,
+        42,
+        44,
+        46
+      ]
+    },
+    "2_1": {
+      "siid": 2,
+      "piid": 1,
+      "values_seen": [
+        2,
+        1
+      ]
+    },
+    "2_2": {
+      "siid": 2,
+      "piid": 2,
+      "values_seen": [
+        0,
+        1
+      ]
+    },
+    "2_3": {
+      "siid": 2,
+      "piid": 3,
+      "values_seen": [
+        0,
+        -1
+      ]
+    },
+    "2_5": {
+      "siid": 2,
+      "piid": 5,
+      "values_seen": [
+        0
+      ]
+    },
+    "2_10": {
+      "siid": 2,
+      "piid": 10,
+      "values_seen": [
+        0,
+        1,
+        -1
+      ]
+    },
+    "1_65": {
+      "siid": 1,
+      "piid": 65,
+      "values_seen": [
+        42,
+        34,
+        41
+      ]
+    },
+    "6_11": {
+      "siid": 6,
+      "piid": 11,
+      "values_seen": [
+        1,
+        0
+      ]
+    },
+    "1_6": {
+      "siid": 1,
+      "piid": 6,
+      "values_seen": [
+        "m01"
+      ]
+    }
+  },
+  "message_log": [
+    {
+      "ts": "19:47:03",
+      "topic": "/status/-117233825/HT567056/dreame.fwd.u2527/eu/",
+      "payload": {
+        "id": 56,
+        "did": -117233825,
+        "data": {
+          "id": 56,
+          "method": "properties_changed",
+          "params": [
+            {
+              "siid": 2,
+              "piid": 11,
+              "value": 329,
+              "did": "-117233825"
+            },
+            {
+              "siid": 3,
+              "piid": 14,
+              "value": 98,
+              "did": "-117233825"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "ts": "19:47:13",
+      "topic": "/status/-117233825/HT567056/dreame.fwd.u2527/eu/",
+      "payload": {
+        "id": 168,
+        "did": -117233825,
+        "data": {
+          "id": 168,
+          "method": "properties_changed",
+          "params": [
+            {
+              "siid": 2,
+              "piid": 1,
+              "value": 2,
+              "did": "-117233825"
+            },
+            {
+              "siid": 2,
+              "piid": 2,
+              "value": 0,
+              "did": "-117233825"
+            },
+            {
+              "siid": 2,
+              "piid": 3,
+              "value": 0,
+              "did": "-117233825"
+            },
+            {
+              "siid": 2,
+              "piid": 5,
+              "value": 0,
+              "did": "-117233825"
+            },
+            {
+              "siid": 2,
+              "piid": 10,
+              "value": 0,
+              "did": "-117233825"
+            },
+            {
+              "siid": 2,
+              "piid": 11,
+              "value": 329,
+              "did": "-117233825"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "ts": "19:47:17",
+      "topic": "/status/-117233825/HT567056/dreame.fwd.u2527/eu/",
+      "payload": {
+        "id": 78,
+        "did": -117233825,
+        "data": {
+          "id": 78,
+          "method": "properties_changed",
+          "params": [
+            {
+              "siid": 2,
+              "piid": 1,
+              "value": 1,
+              "did": "-117233825"
+            },
+            {
+              "siid": 2,
+              "piid": 2,
+              "value": 0,
+              "did": "-117233825"
+            },
+            {
+              "siid": 2,
+              "piid": 3,
+              "value": 0,
+              "did": "-117233825"
+            },
+            {
+              "siid": 2,
+              "piid": 5,
+              "value": 0,
+              "did": "-117233825"
+            },
+            {
+              "siid": 2,
+              "piid": 10,
+              "value": 1,
+              "did": "-117233825"
+            },
+            {
+              "siid": 2,
+              "piid": 11,
+              "value": 329,
+              "did": "-117233825"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "ts": "19:48:06",
+      "topic": "/status/-117233825/HT567056/dreame.fwd.u2527/eu/",
+      "payload": {
+        "id": 166,
+        "did": -117233825,
+        "data": {
+          "id": 166,
+          "method": "properties_changed",
+          "params": [
+            {
+              "siid": 2,
+              "piid": 11,
+              "value": 328,
+              "did": "-117233825"
+            },
+            {
+              "siid": 3,
+              "piid": 14,
+              "value": 100,
+              "did": "-117233825"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "ts": "19:49:06",
+      "topic": "/status/-117233825/HT567056/dreame.fwd.u2527/eu/",
+      "payload": {
+        "id": 20,
+        "did": -117233825,
+        "data": {
+          "id": 20,
+          "method": "properties_changed",
+          "params": [
+            {
+              "siid": 2,
+              "piid": 11,
+              "value": 327,
+              "did": "-117233825"
+            },
+            {
+              "siid": 3,
+              "piid": 14,
+              "value": 102,
+              "did": "-117233825"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "ts": "19:50:06",
+      "topic": "/status/-117233825/HT567056/dreame.fwd.u2527/eu/",
+      "payload": {
+        "id": 147,
+        "did": -117233825,
+        "data": {
+          "id": 147,
+          "method": "properties_changed",
+          "params": [
+            {
+              "siid": 2,
+              "piid": 11,
+              "value": 326,
+              "did": "-117233825"
+            },
+            {
+              "siid": 3,
+              "piid": 14,
+              "value": 105,
+              "did": "-117233825"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "ts": "19:50:09",
+      "topic": "/status/-117233825/HT567056/dreame.fwd.u2527/eu/",
+      "payload": {
+        "id": 37,
+        "did": -117233825,
+        "data": {
+          "id": 37,
+          "method": "properties_changed",
+          "params": [
+            {
+              "siid": 2,
+              "piid": 1,
+              "value": 2,
+              "did": "-117233825"
+            },
+            {
+              "siid": 2,
+              "piid": 2,
+              "value": 0,
+              "did": "-117233825"
+            },
+            {
+              "siid": 2,
+              "piid": 3,
+              "value": 0,
+              "did": "-117233825"
+            },
+            {
+              "siid": 2,
+              "piid": 5,
+              "value": 0,
+              "did": "-117233825"
+            },
+            {
+              "siid": 2,
+              "piid": 10,
+              "value": 0,
+              "did": "-117233825"
+            },
+            {
+              "siid": 2,
+              "piid": 11,
+              "value": 326,
+              "did": "-117233825"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "ts": "19:50:48",
+      "topic": "/status/-117233825/HT567056/dreame.fwd.u2527/eu/",
+      "payload": {
+        "id": 86,
+        "did": -117233825,
+        "data": {
+          "id": 86,
+          "method": "properties_changed",
+          "params": [
+            {
+              "siid": 1,
+              "piid": 65,
+              "value": 42,
+              "did": "-117233825"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "ts": "19:50:51",
+      "topic": "/status/-117233825/HT567056/dreame.fwd.u2527/eu/",
+      "payload": {
+        "id": 36,
+        "did": -117233825,
+        "data": {
+          "id": 36,
+          "method": "properties_changed",
+          "params": [
+            {
+              "siid": 2,
+              "piid": 1,
+              "value": 1,
+              "did": "-117233825"
+            },
+            {
+              "siid": 2,
+              "piid": 2,
+              "value": 0,
+              "did": "-117233825"
+            },
+            {
+              "siid": 2,
+              "piid": 3,
+              "value": 0,
+              "did": "-117233825"
+            },
+            {
+              "siid": 2,
+              "piid": 5,
+              "value": 0,
+              "did": "-117233825"
+            },
+            {
+              "siid": 2,
+              "piid": 10,
+              "value": 1,
+              "did": "-117233825"
+            },
+            {
+              "siid": 2,
+              "piid": 11,
+              "value": 326,
+              "did": "-117233825"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "ts": "19:51:49",
+      "topic": "/status/-117233825/HT567056/dreame.fwd.u2527/eu/",
+      "payload": {
+        "id": 68,
+        "did": -117233825,
+        "data": {
+          "id": 68,
+          "method": "properties_changed",
+          "params": [
+            {
+              "siid": 2,
+              "piid": 11,
+              "value": 325,
+              "did": "-117233825"
+            },
+            {
+              "siid": 3,
+              "piid": 14,
+              "value": 108,
+              "did": "-117233825"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "ts": "19:52:49",
+      "topic": "/status/-117233825/HT567056/dreame.fwd.u2527/eu/",
+      "payload": {
+        "id": 223,
+        "did": -117233825,
+        "data": {
+          "id": 223,
+          "method": "properties_changed",
+          "params": [
+            {
+              "siid": 2,
+              "piid": 11,
+              "value": 324,
+              "did": "-117233825"
+            },
+            {
+              "siid": 3,
+              "piid": 14,
+              "value": 110,
+              "did": "-117233825"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "ts": "19:53:49",
+      "topic": "/status/-117233825/HT567056/dreame.fwd.u2527/eu/",
+      "payload": {
+        "id": 89,
+        "did": -117233825,
+        "data": {
+          "id": 89,
+          "method": "properties_changed",
+          "params": [
+            {
+              "siid": 2,
+              "piid": 11,
+              "value": 323,
+              "did": "-117233825"
+            },
+            {
+              "siid": 3,
+              "piid": 14,
+              "value": 113,
+              "did": "-117233825"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "ts": "19:54:49",
+      "topic": "/status/-117233825/HT567056/dreame.fwd.u2527/eu/",
+      "payload": {
+        "id": 141,
+        "did": -117233825,
+        "data": {
+          "id": 141,
+          "method": "properties_changed",
+          "params": [
+            {
+              "siid": 2,
+              "piid": 11,
+              "value": 322,
+              "did": "-117233825"
+            },
+            {
+              "siid": 3,
+              "piid": 14,
+              "value": 115,
+              "did": "-117233825"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "ts": "19:55:50",
+      "topic": "/status/-117233825/HT567056/dreame.fwd.u2527/eu/",
+      "payload": {
+        "id": 67,
+        "did": -117233825,
+        "data": {
+          "id": 67,
+          "method": "properties_changed",
+          "params": [
+            {
+              "siid": 2,
+              "piid": 11,
+              "value": 321,
+              "did": "-117233825"
+            },
+            {
+              "siid": 3,
+              "piid": 14,
+              "value": 117,
+              "did": "-117233825"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "ts": "19:56:50",
+      "topic": "/status/-117233825/HT567056/dreame.fwd.u2527/eu/",
+      "payload": {
+        "id": 123,
+        "did": -117233825,
+        "data": {
+          "id": 123,
+          "method": "properties_changed",
+          "params": [
+            {
+              "siid": 2,
+              "piid": 11,
+              "value": 320,
+              "did": "-117233825"
+            },
+            {
+              "siid": 3,
+              "piid": 14,
+              "value": 119,
+              "did": "-117233825"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "ts": "19:57:50",
+      "topic": "/status/-117233825/HT567056/dreame.fwd.u2527/eu/",
+      "payload": {
+        "id": 190,
+        "did": -117233825,
+        "data": {
+          "id": 190,
+          "method": "properties_changed",
+          "params": [
+            {
+              "siid": 2,
+              "piid": 11,
+              "value": 319,
+              "did": "-117233825"
+            },
+            {
+              "siid": 3,
+              "piid": 14,
+              "value": 121,
+              "did": "-117233825"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "ts": "19:58:50",
+      "topic": "/status/-117233825/HT567056/dreame.fwd.u2527/eu/",
+      "payload": {
+        "id": 144,
+        "did": -117233825,
+        "data": {
+          "id": 144,
+          "method": "properties_changed",
+          "params": [
+            {
+              "siid": 2,
+              "piid": 11,
+              "value": 318,
+              "did": "-117233825"
+            },
+            {
+              "siid": 3,
+              "piid": 14,
+              "value": 123,
+              "did": "-117233825"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "ts": "19:59:50",
+      "topic": "/status/-117233825/HT567056/dreame.fwd.u2527/eu/",
+      "payload": {
+        "id": 22,
+        "did": -117233825,
+        "data": {
+          "id": 22,
+          "method": "properties_changed",
+          "params": [
+            {
+              "siid": 2,
+              "piid": 11,
+              "value": 317,
+              "did": "-117233825"
+            },
+            {
+              "siid": 3,
+              "piid": 14,
+              "value": 125,
+              "did": "-117233825"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "ts": "20:00:50",
+      "topic": "/status/-117233825/HT567056/dreame.fwd.u2527/eu/",
+      "payload": {
+        "id": 137,
+        "did": -117233825,
+        "data": {
+          "id": 137,
+          "method": "properties_changed",
+          "params": [
+            {
+              "siid": 2,
+              "piid": 11,
+              "value": 316,
+              "did": "-117233825"
+            },
+            {
+              "siid": 3,
+              "piid": 14,
+              "value": 127,
+              "did": "-117233825"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "ts": "20:00:53",
+      "topic": "/status/-117233825/HT567056/dreame.fwd.u2527/eu/",
+      "payload": {
+        "id": 157,
+        "did": -117233825,
+        "data": {
+          "id": 157,
+          "method": "properties_changed",
+          "params": [
+            {
+              "siid": 2,
+              "piid": 1,
+              "value": 2,
+              "did": "-117233825"
+            },
+            {
+              "siid": 2,
+              "piid": 2,
+              "value": 0,
+              "did": "-117233825"
+            },
+            {
+              "siid": 2,
+              "piid": 3,
+              "value": -1,
+              "did": "-117233825"
+            },
+            {
+              "siid": 2,
+              "piid": 5,
+              "value": 0,
+              "did": "-117233825"
+            },
+            {
+              "siid": 2,
+              "piid": 10,
+              "value": -1,
+              "did": "-117233825"
+            },
+            {
+              "siid": 2,
+              "piid": 11,
+              "value": 0,
+              "did": "-117233825"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "ts": "20:01:17",
+      "topic": "/status/-117233825/HT567056/dreame.fwd.u2527/eu/",
+      "payload": {
+        "id": 126,
+        "did": -117233825,
+        "data": {
+          "id": 126,
+          "method": "properties_changed",
+          "params": [
+            {
+              "siid": 6,
+              "piid": 11,
+              "value": 1,
+              "did": "-117233825"
+            },
+            {
+              "siid": 2,
+              "piid": 1,
+              "value": 2,
+              "did": "-117233825"
+            },
+            {
+              "siid": 2,
+              "piid": 2,
+              "value": 1,
+              "did": "-117233825"
+            },
+            {
+              "siid": 2,
+              "piid": 3,
+              "value": -1,
+              "did": "-117233825"
+            },
+            {
+              "siid": 2,
+              "piid": 10,
+              "value": -1,
+              "did": "-117233825"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "ts": "20:01:41",
+      "topic": "/status/-117233825/HT567056/dreame.fwd.u2527/eu/",
+      "payload": {
+        "id": 119,
+        "did": -117233825,
+        "data": {
+          "id": 119,
+          "method": "properties_changed",
+          "params": [
+            {
+              "siid": 6,
+              "piid": 11,
+              "value": 0,
+              "did": "-117233825"
+            },
+            {
+              "siid": 2,
+              "piid": 1,
+              "value": 2,
+              "did": "-117233825"
+            },
+            {
+              "siid": 2,
+              "piid": 2,
+              "value": 0,
+              "did": "-117233825"
+            },
+            {
+              "siid": 2,
+              "piid": 3,
+              "value": -1,
+              "did": "-117233825"
+            },
+            {
+              "siid": 2,
+              "piid": 10,
+              "value": -1,
+              "did": "-117233825"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "ts": "20:04:17",
+      "topic": "/status/-117233825/HT567056/dreame.fwd.u2527/eu/",
+      "payload": {
+        "id": 198,
+        "did": -117233825,
+        "data": {
+          "id": 198,
+          "method": "properties_changed",
+          "params": [
+            {
+              "siid": 2,
+              "piid": 1,
+              "value": 1,
+              "did": "-117233825"
+            },
+            {
+              "siid": 2,
+              "piid": 2,
+              "value": 0,
+              "did": "-117233825"
+            },
+            {
+              "siid": 2,
+              "piid": 3,
+              "value": 0,
+              "did": "-117233825"
+            },
+            {
+              "siid": 2,
+              "piid": 5,
+              "value": 0,
+              "did": "-117233825"
+            },
+            {
+              "siid": 2,
+              "piid": 10,
+              "value": 1,
+              "did": "-117233825"
+            },
+            {
+              "siid": 2,
+              "piid": 11,
+              "value": 360,
+              "did": "-117233825"
+            },
+            {
+              "siid": 1,
+              "piid": 6,
+              "value": "m01",
+              "did": "-117233825"
+            },
+            {
+              "siid": 3,
+              "piid": 14,
+              "value": 0,
+              "did": "-117233825"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "ts": "20:05:17",
+      "topic": "/status/-117233825/HT567056/dreame.fwd.u2527/eu/",
+      "payload": {
+        "id": 47,
+        "did": -117233825,
+        "data": {
+          "id": 47,
+          "method": "properties_changed",
+          "params": [
+            {
+              "siid": 2,
+              "piid": 11,
+              "value": 359,
+              "did": "-117233825"
+            },
+            {
+              "siid": 3,
+              "piid": 14,
+              "value": 4,
+              "did": "-117233825"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "ts": "20:05:50",
+      "topic": "/status/-117233825/HT567056/dreame.fwd.u2527/eu/",
+      "payload": {
+        "id": 38,
+        "did": -117233825,
+        "data": {
+          "id": 38,
+          "method": "properties_changed",
+          "params": [
+            {
+              "siid": 1,
+              "piid": 65,
+              "value": 34,
+              "did": "-117233825"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "ts": "20:06:17",
+      "topic": "/status/-117233825/HT567056/dreame.fwd.u2527/eu/",
+      "payload": {
+        "id": 152,
+        "did": -117233825,
+        "data": {
+          "id": 152,
+          "method": "properties_changed",
+          "params": [
+            {
+              "siid": 2,
+              "piid": 11,
+              "value": 358,
+              "did": "-117233825"
+            },
+            {
+              "siid": 3,
+              "piid": 14,
+              "value": 6,
+              "did": "-117233825"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "ts": "20:07:17",
+      "topic": "/status/-117233825/HT567056/dreame.fwd.u2527/eu/",
+      "payload": {
+        "id": 136,
+        "did": -117233825,
+        "data": {
+          "id": 136,
+          "method": "properties_changed",
+          "params": [
+            {
+              "siid": 2,
+              "piid": 11,
+              "value": 357,
+              "did": "-117233825"
+            },
+            {
+              "siid": 3,
+              "piid": 14,
+              "value": 8,
+              "did": "-117233825"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "ts": "20:08:18",
+      "topic": "/status/-117233825/HT567056/dreame.fwd.u2527/eu/",
+      "payload": {
+        "id": 245,
+        "did": -117233825,
+        "data": {
+          "id": 245,
+          "method": "properties_changed",
+          "params": [
+            {
+              "siid": 2,
+              "piid": 11,
+              "value": 356,
+              "did": "-117233825"
+            },
+            {
+              "siid": 3,
+              "piid": 14,
+              "value": 10,
+              "did": "-117233825"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "ts": "20:09:18",
+      "topic": "/status/-117233825/HT567056/dreame.fwd.u2527/eu/",
+      "payload": {
+        "id": 180,
+        "did": -117233825,
+        "data": {
+          "id": 180,
+          "method": "properties_changed",
+          "params": [
+            {
+              "siid": 2,
+              "piid": 11,
+              "value": 355,
+              "did": "-117233825"
+            },
+            {
+              "siid": 3,
+              "piid": 14,
+              "value": 13,
+              "did": "-117233825"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "ts": "20:10:18",
+      "topic": "/status/-117233825/HT567056/dreame.fwd.u2527/eu/",
+      "payload": {
+        "id": 48,
+        "did": -117233825,
+        "data": {
+          "id": 48,
+          "method": "properties_changed",
+          "params": [
+            {
+              "siid": 2,
+              "piid": 11,
+              "value": 354,
+              "did": "-117233825"
+            },
+            {
+              "siid": 3,
+              "piid": 14,
+              "value": 15,
+              "did": "-117233825"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "ts": "20:11:18",
+      "topic": "/status/-117233825/HT567056/dreame.fwd.u2527/eu/",
+      "payload": {
+        "id": 212,
+        "did": -117233825,
+        "data": {
+          "id": 212,
+          "method": "properties_changed",
+          "params": [
+            {
+              "siid": 2,
+              "piid": 11,
+              "value": 353,
+              "did": "-117233825"
+            },
+            {
+              "siid": 3,
+              "piid": 14,
+              "value": 18,
+              "did": "-117233825"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "ts": "20:12:19",
+      "topic": "/status/-117233825/HT567056/dreame.fwd.u2527/eu/",
+      "payload": {
+        "id": 52,
+        "did": -117233825,
+        "data": {
+          "id": 52,
+          "method": "properties_changed",
+          "params": [
+            {
+              "siid": 2,
+              "piid": 11,
+              "value": 352,
+              "did": "-117233825"
+            },
+            {
+              "siid": 3,
+              "piid": 14,
+              "value": 20,
+              "did": "-117233825"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "ts": "20:13:19",
+      "topic": "/status/-117233825/HT567056/dreame.fwd.u2527/eu/",
+      "payload": {
+        "id": 157,
+        "did": -117233825,
+        "data": {
+          "id": 157,
+          "method": "properties_changed",
+          "params": [
+            {
+              "siid": 2,
+              "piid": 11,
+              "value": 351,
+              "did": "-117233825"
+            },
+            {
+              "siid": 3,
+              "piid": 14,
+              "value": 22,
+              "did": "-117233825"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "ts": "20:14:19",
+      "topic": "/status/-117233825/HT567056/dreame.fwd.u2527/eu/",
+      "payload": {
+        "id": 58,
+        "did": -117233825,
+        "data": {
+          "id": 58,
+          "method": "properties_changed",
+          "params": [
+            {
+              "siid": 2,
+              "piid": 11,
+              "value": 350,
+              "did": "-117233825"
+            },
+            {
+              "siid": 3,
+              "piid": 14,
+              "value": 25,
+              "did": "-117233825"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "ts": "20:15:19",
+      "topic": "/status/-117233825/HT567056/dreame.fwd.u2527/eu/",
+      "payload": {
+        "id": 13,
+        "did": -117233825,
+        "data": {
+          "id": 13,
+          "method": "properties_changed",
+          "params": [
+            {
+              "siid": 2,
+              "piid": 11,
+              "value": 349,
+              "did": "-117233825"
+            },
+            {
+              "siid": 3,
+              "piid": 14,
+              "value": 27,
+              "did": "-117233825"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "ts": "20:16:20",
+      "topic": "/status/-117233825/HT567056/dreame.fwd.u2527/eu/",
+      "payload": {
+        "id": 15,
+        "did": -117233825,
+        "data": {
+          "id": 15,
+          "method": "properties_changed",
+          "params": [
+            {
+              "siid": 2,
+              "piid": 11,
+              "value": 348,
+              "did": "-117233825"
+            },
+            {
+              "siid": 3,
+              "piid": 14,
+              "value": 29,
+              "did": "-117233825"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "ts": "20:17:20",
+      "topic": "/status/-117233825/HT567056/dreame.fwd.u2527/eu/",
+      "payload": {
+        "id": 189,
+        "did": -117233825,
+        "data": {
+          "id": 189,
+          "method": "properties_changed",
+          "params": [
+            {
+              "siid": 2,
+              "piid": 11,
+              "value": 347,
+              "did": "-117233825"
+            },
+            {
+              "siid": 3,
+              "piid": 14,
+              "value": 32,
+              "did": "-117233825"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "ts": "20:18:20",
+      "topic": "/status/-117233825/HT567056/dreame.fwd.u2527/eu/",
+      "payload": {
+        "id": 47,
+        "did": -117233825,
+        "data": {
+          "id": 47,
+          "method": "properties_changed",
+          "params": [
+            {
+              "siid": 2,
+              "piid": 11,
+              "value": 346,
+              "did": "-117233825"
+            },
+            {
+              "siid": 3,
+              "piid": 14,
+              "value": 34,
+              "did": "-117233825"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "ts": "20:19:20",
+      "topic": "/status/-117233825/HT567056/dreame.fwd.u2527/eu/",
+      "payload": {
+        "id": 161,
+        "did": -117233825,
+        "data": {
+          "id": 161,
+          "method": "properties_changed",
+          "params": [
+            {
+              "siid": 2,
+              "piid": 11,
+              "value": 345,
+              "did": "-117233825"
+            },
+            {
+              "siid": 3,
+              "piid": 14,
+              "value": 36,
+              "did": "-117233825"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "ts": "20:19:21",
+      "topic": "/status/-117233825/HT567056/dreame.fwd.u2527/eu/",
+      "payload": {
+        "id": 247,
+        "did": -117233825,
+        "data": {
+          "id": 247,
+          "method": "event_occured",
+          "params": {
+            "arguments": [
+              {
+                "piid": 14,
+                "value": 43
+              }
+            ],
+            "did": -117233825,
+            "siid": 3,
+            "eiid": 1
+          }
+        }
+      }
+    },
+    {
+      "ts": "20:20:20",
+      "topic": "/status/-117233825/HT567056/dreame.fwd.u2527/eu/",
+      "payload": {
+        "id": 15,
+        "did": -117233825,
+        "data": {
+          "id": 15,
+          "method": "properties_changed",
+          "params": [
+            {
+              "siid": 2,
+              "piid": 11,
+              "value": 344,
+              "did": "-117233825"
+            },
+            {
+              "siid": 3,
+              "piid": 14,
+              "value": 38,
+              "did": "-117233825"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "ts": "20:20:54",
+      "topic": "/status/-117233825/HT567056/dreame.fwd.u2527/eu/",
+      "payload": {
+        "id": 217,
+        "did": -117233825,
+        "data": {
+          "id": 217,
+          "method": "properties_changed",
+          "params": [
+            {
+              "siid": 1,
+              "piid": 65,
+              "value": 41,
+              "did": "-117233825"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "ts": "20:21:21",
+      "topic": "/status/-117233825/HT567056/dreame.fwd.u2527/eu/",
+      "payload": {
+        "id": 104,
+        "did": -117233825,
+        "data": {
+          "id": 104,
+          "method": "properties_changed",
+          "params": [
+            {
+              "siid": 2,
+              "piid": 11,
+              "value": 343,
+              "did": "-117233825"
+            },
+            {
+              "siid": 3,
+              "piid": 14,
+              "value": 40,
+              "did": "-117233825"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "ts": "20:22:21",
+      "topic": "/status/-117233825/HT567056/dreame.fwd.u2527/eu/",
+      "payload": {
+        "id": 244,
+        "did": -117233825,
+        "data": {
+          "id": 244,
+          "method": "properties_changed",
+          "params": [
+            {
+              "siid": 2,
+              "piid": 11,
+              "value": 342,
+              "did": "-117233825"
+            },
+            {
+              "siid": 3,
+              "piid": 14,
+              "value": 42,
+              "did": "-117233825"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "ts": "20:23:21",
+      "topic": "/status/-117233825/HT567056/dreame.fwd.u2527/eu/",
+      "payload": {
+        "id": 217,
+        "did": -117233825,
+        "data": {
+          "id": 217,
+          "method": "properties_changed",
+          "params": [
+            {
+              "siid": 2,
+              "piid": 11,
+              "value": 341,
+              "did": "-117233825"
+            },
+            {
+              "siid": 3,
+              "piid": 14,
+              "value": 44,
+              "did": "-117233825"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "ts": "20:24:21",
+      "topic": "/status/-117233825/HT567056/dreame.fwd.u2527/eu/",
+      "payload": {
+        "id": 60,
+        "did": -117233825,
+        "data": {
+          "id": 60,
+          "method": "properties_changed",
+          "params": [
+            {
+              "siid": 2,
+              "piid": 11,
+              "value": 340,
+              "did": "-117233825"
+            },
+            {
+              "siid": 3,
+              "piid": 14,
+              "value": 46,
+              "did": "-117233825"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

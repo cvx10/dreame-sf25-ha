@@ -41,7 +41,16 @@ def test_property_mapping_is_complete_and_unique():
 def test_known_siid_piid_pairs():
     assert const.PROPERTY_MAPPING[const.PROP_TIME_REMAINING] == {"siid": 2, "piid": 11}
     assert const.PROPERTY_MAPPING[const.PROP_LID] == {"siid": 6, "piid": 11}
-    assert const.PROPERTY_MAPPING[const.PROP_MODE] == {"siid": 1, "piid": 6}
+    # Mode is the operation discriminator at 2/3 (drying=0, cleaning=2, idle=-1).
+    assert const.PROPERTY_MAPPING[const.PROP_MODE] == {"siid": 2, "piid": 3}
+    # 1/6 is a separate program/recipe code string, exposed as "program".
+    assert const.PROPERTY_MAPPING[const.PROP_PROGRAM] == {"siid": 1, "piid": 6}
+
+
+def test_mode_codes():
+    assert const.MODE_CODES[0] == "drying"
+    assert const.MODE_CODES[2] == "cleaning"
+    assert const.MODE_CODES[-1] == "idle"
 
 
 def test_mqtt_topic_format():
@@ -76,7 +85,8 @@ def test_replay_sample_capture():
     state = _replay(cap["message_log"])
 
     # Fixture = drying cycle start, heartbeat, then a lid open/close
-    assert state["mode"] == "m01"
+    assert state["mode"] == 0          # 2/3 = 0 → drying
+    assert state["program"] == "m01"   # 1/6 = raw program code
     assert state["status"] == 1
     assert state["run_flag"] == 1
     assert state["lid"] == 0           # ends closed after open/close
@@ -88,6 +98,24 @@ def test_replay_sample_capture():
     assert const.MODE_CODES[state["mode"]] == "drying"
     assert const.STATUS_CODES[state["status"]] == "running"
     assert const.RUN_FLAG_CODES[state["run_flag"]] == "running"
+
+
+def test_cleaning_cycle_start():
+    """A cleaning start reports 2/3=2 (cleaning) with a 90-min timer; 1/6 stays m01."""
+    start = [{"payload": {"data": {"method": "properties_changed", "params": [
+        {"siid": 2, "piid": 1, "value": 1},
+        {"siid": 2, "piid": 3, "value": 2},     # operation = cleaning
+        {"siid": 2, "piid": 10, "value": 1},
+        {"siid": 2, "piid": 11, "value": 90},    # cleaning duration
+        {"siid": 1, "piid": 6, "value": "m01"},  # program code unchanged
+    ]}}}]
+    s = _replay(start)
+    assert s["mode"] == 2
+    assert const.MODE_CODES[s["mode"]] == "cleaning"
+    assert s["program"] == "m01"
+    assert s["time_remaining"] == 90
+    # Progress for cleaning uses the 90-min duration
+    assert const.MODE_DURATIONS[2] == 90
 
 
 def test_lid_open_close_cycle():

@@ -26,31 +26,33 @@ FULL_CYCLE_MINUTES: Final = 360
 # ---------------------------------------------------------------------------
 
 # Property keys exposed as HA entities
-PROP_MODE: Final = "mode"                   # 1/6  — composting mode (string code)
-PROP_STATUS: Final = "status"               # 2/1  — main status (1=running, 2=idle)
+PROP_MODE: Final = "mode"                   # 2/3  — current operation (drying/cleaning/idle)
+PROP_PROGRAM: Final = "program"             # 1/6  — drying program/recipe code (string, e.g. m01)
+PROP_STATUS: Final = "status"               # 2/1  — main status (1=running, 2=idle, 3=finishing)
 PROP_LID_ALERT: Final = "lid_alert"         # 2/2  — lid-open alert (0=ok, 1=open)
-PROP_CYCLE_ACTIVE: Final = "cycle_active"   # 2/3  — cycle active sub-state (0=active, -1=stopped)
 PROP_RUN_FLAG: Final = "run_flag"           # 2/10 — run flag (1=run, 0=paused, -1=stopped)
 PROP_TIME_REMAINING: Final = "time_remaining"  # 2/11 — remaining cycle time (minutes)
 PROP_TEMPERATURE: Final = "temperature"     # 3/14 — internal temperature (°C)
 PROP_LID: Final = "lid"                     # 6/11 — lid/cover sensor (1=open, 0=closed)
 
 # Confirmed MIoT property table. Format: {prop_key: {"siid": X, "piid": Y}}
+# Verified by MQTT sniffing of drying AND cleaning cycles (2026-05-31 / 06-01).
 PROPERTY_MAPPING: Final[dict[str, dict[str, int]]] = {
-    PROP_MODE:           {"siid": 1, "piid": 6},
+    PROP_PROGRAM:        {"siid": 1, "piid": 6},
     PROP_STATUS:         {"siid": 2, "piid": 1},
     PROP_LID_ALERT:      {"siid": 2, "piid": 2},
-    PROP_CYCLE_ACTIVE:   {"siid": 2, "piid": 3},
+    PROP_MODE:           {"siid": 2, "piid": 3},
     PROP_RUN_FLAG:       {"siid": 2, "piid": 10},
     PROP_TIME_REMAINING: {"siid": 2, "piid": 11},
     PROP_TEMPERATURE:    {"siid": 3, "piid": 14},
     PROP_LID:            {"siid": 6, "piid": 11},
 }
 
-# Status code (2/1) → human-readable name
+# Status code (2/1) → human-readable name. 3 ("finishing") seen transiently on stop.
 STATUS_CODES: Final = {
     1: "running",
     2: "idle",
+    3: "finishing",
 }
 
 # Run-flag code (2/10) → human-readable name
@@ -60,9 +62,17 @@ RUN_FLAG_CODES: Final = {
     -1: "stopped",
 }
 
-# Mode code (1/6, string) → human-readable name
-# 'm01' confirmed = Séchage (Drying). 'm02' presumed = Nettoyage (Cleaning).
+# Operation/mode code (2/3) → human-readable name.
+# CONFIRMED: drying cycle reports 0 (360 min), cleaning cycle reports 2 (90 min),
+# idle/stopped reports -1. (Note: 1/6 stays 'm01' for both — it is NOT the operation.)
 MODE_CODES: Final = {
-    "m01": "drying",
-    "m02": "cleaning",
+    -1: "idle",
+    0: "drying",
+    2: "cleaning",
+}
+
+# Per-mode full cycle durations (minutes), used to derive a progress %.
+MODE_DURATIONS: Final = {
+    0: 360,   # drying
+    2: 90,    # cleaning
 }
