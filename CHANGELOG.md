@@ -4,6 +4,17 @@ All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/);
 this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.4.0] — 2026-06-01
+
+### Added
+- **State restoration across restarts.** Because the SF25 only pushes state
+  (no polled read), entities used to show `unknown` after every HA restart
+  until the device next pushed. Sensors now use `RestoreSensor` and binary
+  sensors `RestoreEntity` to display the last known value immediately on
+  startup; the live value takes over as soon as the property is pushed again.
+  Fallback applies per-property, only while that property is absent from the
+  coordinator.
+
 ## [0.3.1] — 2026-06-01
 
 ### Fixed

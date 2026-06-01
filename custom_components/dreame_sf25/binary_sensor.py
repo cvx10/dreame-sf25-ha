@@ -12,6 +12,7 @@ from homeassistant.components.binary_sensor import (
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.helpers.restore_state import RestoreEntity
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .const import (
@@ -64,8 +65,15 @@ async def async_setup_entry(
 
 
 class DreameSF25BinarySensor(
-    CoordinatorEntity[DreameSF25Coordinator], BinarySensorEntity
+    CoordinatorEntity[DreameSF25Coordinator], BinarySensorEntity, RestoreEntity
 ):
+    """Binary sensor that restores its last state across restarts.
+
+    There is no RestoreBinarySensor in HA, so we mix in RestoreEntity and read
+    the last on/off state. The SF25 only pushes state, so this avoids 'unknown'
+    after a restart until the device next pushes this property.
+    """
+
     _attr_has_entity_name = True
     entity_description: SF25BinaryDescription
 
@@ -78,6 +86,7 @@ class DreameSF25BinarySensor(
         super().__init__(coordinator)
         self.entity_description = description
         self._attr_unique_id = f"{entry_id}_{description.key}"
+        self._restored_is_on: bool | None = None
         self._attr_device_info = {
             "identifiers": {(DOMAIN, coordinator._did)},
             "name": coordinator.device_name,
@@ -86,7 +95,17 @@ class DreameSF25BinarySensor(
             "model_id": coordinator.model_id,
         }
 
+    async def async_added_to_hass(self) -> None:
+        await super().async_added_to_hass()
+        last = await self.async_get_last_state()
+        if last is not None and last.state in ("on", "off"):
+            self._restored_is_on = last.state == "on"
+
     @property
     def is_on(self) -> bool | None:
-        raw = (self.coordinator.data or {}).get(self.entity_description.key)
-        return self.entity_description.is_on_fn(raw)
+        data = self.coordinator.data or {}
+        key = self.entity_description.key
+        if key not in data:
+            # Not pushed since startup → show last known state.
+            return self._restored_is_on
+        return self.entity_description.is_on_fn(data[key])

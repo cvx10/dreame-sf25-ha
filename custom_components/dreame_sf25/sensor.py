@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from typing import Any, Callable
 
 from homeassistant.components.sensor import (
+    RestoreSensor,
     SensorDeviceClass,
     SensorEntity,
     SensorEntityDescription,
@@ -108,6 +109,9 @@ SENSOR_DESCRIPTIONS: tuple[SF25SensorDescription, ...] = (
 # A derived progress sensor (0–100%) computed from the remaining time.
 PROGRESS_KEY = "progress"
 
+# Sentinel: the coordinator has not yet received this property (vs. a real None).
+_MISSING = object()
+
 
 async def async_setup_entry(
     hass: HomeAssistant,
@@ -124,12 +128,21 @@ async def async_setup_entry(
     async_add_entities(entities)
 
 
-class _BaseSF25Sensor(CoordinatorEntity[DreameSF25Coordinator], SensorEntity):
+class _BaseSF25Sensor(CoordinatorEntity[DreameSF25Coordinator], RestoreSensor):
+    """Base sensor that restores its last value across restarts.
+
+    The SF25 only pushes state (no polled read), so after a restart the
+    coordinator has no data until the device next pushes. RestoreSensor lets us
+    show the last known value in the meantime instead of 'unknown'. As soon as
+    the relevant property is pushed, the live value takes over.
+    """
+
     _attr_has_entity_name = True
 
     def __init__(self, coordinator: DreameSF25Coordinator, entry_id: str, key: str) -> None:
         super().__init__(coordinator)
         self._attr_unique_id = f"{entry_id}_{key}"
+        self._restored_native_value: Any = None
         self._attr_device_info = {
             "identifiers": {(DOMAIN, coordinator._did)},
             "name": coordinator.device_name,
@@ -137,6 +150,24 @@ class _BaseSF25Sensor(CoordinatorEntity[DreameSF25Coordinator], SensorEntity):
             "model": MODEL,
             "model_id": coordinator.model_id,
         }
+
+    async def async_added_to_hass(self) -> None:
+        # super() chains through CoordinatorEntity (registers the push listener)
+        # and RestoreEntity (loads stored state).
+        await super().async_added_to_hass()
+        last = await self.async_get_last_sensor_data()
+        if last is not None:
+            self._restored_native_value = last.native_value
+
+    def _fresh_native_value(self) -> Any:
+        """Return the live value, or _MISSING if not yet pushed. Subclasses override."""
+        return _MISSING
+
+    @property
+    def native_value(self) -> Any:
+        value = self._fresh_native_value()
+        # Fall back to the restored value only while the property is absent.
+        return self._restored_native_value if value is _MISSING else value
 
 
 class DreameSF25Sensor(_BaseSF25Sensor):
@@ -153,9 +184,12 @@ class DreameSF25Sensor(_BaseSF25Sensor):
         super().__init__(coordinator, entry_id, description.key)
         self.entity_description = description
 
-    @property
-    def native_value(self) -> Any:
-        raw = (self.coordinator.data or {}).get(self.entity_description.key)
+    def _fresh_native_value(self) -> Any:
+        data = self.coordinator.data or {}
+        key = self.entity_description.key
+        if key not in data:
+            return _MISSING
+        raw = data[key]
         if self.entity_description.value_fn:
             return self.entity_description.value_fn(raw)
         return raw
@@ -172,12 +206,13 @@ class DreameSF25ProgressSensor(_BaseSF25Sensor):
     def __init__(self, coordinator: DreameSF25Coordinator, entry_id: str) -> None:
         super().__init__(coordinator, entry_id, PROGRESS_KEY)
 
-    @property
-    def native_value(self) -> int | None:
+    def _fresh_native_value(self) -> int | None | object:
         data = self.coordinator.data or {}
-        remaining = data.get(PROP_TIME_REMAINING)
+        if PROP_TIME_REMAINING not in data:
+            return _MISSING
+        remaining = data[PROP_TIME_REMAINING]
         if remaining is None or remaining <= 0:
-            return None
+            return None  # no active cycle (property present but zero)
         # Pick the full duration for the current operation (drying=360, cleaning=90),
         # falling back to the default. This keeps progress accurate per mode.
         total = MODE_DURATIONS.get(data.get(PROP_MODE), FULL_CYCLE_MINUTES)
