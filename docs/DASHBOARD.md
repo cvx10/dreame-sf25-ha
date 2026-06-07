@@ -36,13 +36,6 @@ The icon is green while a cycle runs, amber when paused, grey when idle.
   slide_to_close_distance: '100'
   popup_mode: fit-content
   cards:
-    - type: picture
-      image: >-
-        https://oss.iot.dreame.tech/pub/pic/000000/ali_dreame/null/7b9845a3c5c47e1da3e203507b1b1a4d20260302072013.png
-      card_mod:
-        style: |
-          ha-card { border: none; box-shadow: none; background: none; }
-          img { border-radius: 14px; }
     # Header — current state (run_state + mode based, so it survives restarts)
     - type: custom:mushroom-template-card
       primary: >-
@@ -89,22 +82,21 @@ The icon is green while a cycle runs, amber when paused, grey when idle.
               rgba(var(--rgb-green), 0.30) {{ p }}%,
               rgba(128,128,128,0.12) {{ p }}%);
           }
+    # Only the lid sensors here — everything else (state, temp, time, %, finish)
+    # is already shown by the header and progress bar above, so listing it again
+    # would be redundant. Keep the popup compact.
     - type: entities
       card_mod: {style: "ha-card { border: none; box-shadow: none; }\n"}
       entities:
-        - {entity: sensor.burnthemall_activity, name: État}
-        - {entity: sensor.burnthemall_mode, name: Mode}
-        - {entity: sensor.burnthemall_time_remaining, name: Temps restant}
-        - {entity: sensor.burnthemall_estimated_finish, name: Fin estimée}
-        - {entity: sensor.burnthemall_temperature, name: Température}
         - {entity: binary_sensor.burnthemall_lid, name: Couvercle}
         - {entity: binary_sensor.burnthemall_lid_alert, name: Alerte couvercle}
 ```
 
 ## Notes
-- The photo is the Dreame CDN product image for `dreame.fwd.u2527`. It loads
-  remotely; if the CDN URL ever changes, download the image into
-  `/config/www/sf25.png` and use `image: /local/sf25.png` instead.
+- The popup is intentionally compact: a product photo was tried but removed —
+  it took too much vertical space and added no information. The header + progress
+  bar already convey state, temperature, time, % and finish, so the entities list
+  is trimmed to just the two lid sensors to avoid duplication.
 - Entity IDs assume the device is named **BurnThemAll**. Adjust the
   `burnthemall_*` slugs if your device has a different name.
 - The header, progress bar and chip deliberately derive from `run_state` +
@@ -112,7 +104,6 @@ The icon is green while a cycle runs, amber when paused, grey when idle.
   than the derived `Activity` / `Estimated Finish` sensors. Those derived
   sensors need a fresh `run_flag` push (only sent on a state change), so right
   after a restart mid-cycle they read `unknown` until the next transition. The
-  restore-backed properties keep the popup correct immediately. `Activity` and
-  `Estimated Finish` still appear in the entities list.
+  restore-backed properties keep the popup correct immediately.
 - The progress-bar fill is a `card-mod` `linear-gradient` whose stop position is
   the `cycle_progress` percentage (`|int(0)` guards the `unknown` case → 0%).
