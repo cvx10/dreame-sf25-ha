@@ -82,14 +82,19 @@ The icon is green while a cycle runs, amber when paused, grey when idle.
               rgba(var(--rgb-green), 0.30) {{ p }}%,
               rgba(128,128,128,0.12) {{ p }}%);
           }
-    # Only the lid sensors here — everything else (state, temp, time, %, finish)
-    # is already shown by the header and progress bar above, so listing it again
-    # would be redundant. Keep the popup compact.
-    - type: entities
-      card_mod: {style: "ha-card { border: none; box-shadow: none; }\n"}
-      entities:
-        - {entity: binary_sensor.burnthemall_lid, name: Couvercle}
-        - {entity: binary_sensor.burnthemall_lid_alert, name: Alerte couvercle}
+    # Lid status only — and only when NOT running. During a cycle the lid is
+    # necessarily closed, so showing it would be noise. The `conditional` card
+    # hides the whole row while run_state == running. (The lid-alert binary
+    # sensor is intentionally omitted: it duplicates the lid open/closed state.)
+    - type: conditional
+      conditions:
+        - entity: sensor.burnthemall_run_state
+          state_not: running
+      card:
+        type: entities
+        card_mod: {style: "ha-card { border: none; box-shadow: none; }\n"}
+        entities:
+          - {entity: binary_sensor.burnthemall_lid, name: Couvercle}
 ```
 
 ## Notes
