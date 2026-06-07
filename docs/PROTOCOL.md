@@ -62,8 +62,8 @@ drying cycle (2026-05-31) and a self-cleaning cycle (2026-06-01).
 | 2/11 | Time remaining (min) | counts down 1/min; **frozen while paused**; 0 on stop; **360 for drying, 90 for cleaning** at fresh start |
 | 3/14 | Temperature (°C) | 0 at cold start; rises during drying (saw up to 127); stays 0 during cleaning |
 | 6/11 | Lid/cover | 1=open, 0=closed |
-| 1/65 | unknown | seen once = 42 (event? RSSI?) |
-| 2/5  | unknown | always 0 so far |
+| 1/65 | unknown — **static**, NOT a cycle phase | seen `3`, emitted once ~25 s after a fresh start, then never re-pushed through pause/resume/stop/restart. Sticky config or total-cycle counter, not a live indicator. |
+| 2/5  | unknown — **static**, likely fault code | always `0` across idle/run/pause/stop. Probably "no error". Only expected to change on a real fault. |
 
 > **Correction (2026-06-01):** Earlier we assumed `1/6` was the mode
 > (`m01`=drying, `m02`=cleaning). The cleaning cycle disproved this — `1/6`
@@ -84,8 +84,30 @@ drying cycle (2026-05-31) and a self-cleaning cycle (2026-06-01).
 - **Lid open**: 6/11→1, 2/2→1
 - **Lid close**: 6/11→0, 2/2→0
 
+### Run-state truth table (full fresh drying cycle, 2026-06-07)
+Captured a clean wake → open → fill → close → drying-start, then a
+pause → resume → stop → fresh-start series. Each transition isolated by ~30 s.
+
+| Transition | 2/1 status | 2/3 mode | 2/10 run_flag | 2/11 time | Other |
+|------------|:---:|:---:|:---:|:---:|-------|
+| Fresh start (drying) | 1 | 0 | 1 | 360 | 1/6=`m01` re-emitted, 3/14 reset to 0 |
+| **Pause**  | 2 | 0 | **0** | **frozen** | temp not re-pushed |
+| **Resume** | 1 | 0 | **1** | **continues** | picks up where frozen |
+| **Stop**   | 2 | **-1** | **-1** | **0** | cycle cancelled |
+
+Key takeaways:
+- `2/1` status = **2** for idle, pause AND stop alike → it does **not** distinguish
+  them. `2/10` run_flag is the real run-state discriminator (1/0/-1), backed by
+  `2/3` mode (0 while paused, -1 once stopped).
+- A fresh start always re-emits `1/6` (`m01`) and resets `3/14` temp to 0.
+- `1/65` and `2/5` stayed put through the entire series (see notes above).
+- Filling the bin produced **no** MQTT event → there is no weight/fill sensor exposed.
+- Status `3` ("finishing") was **not** seen on this stop (it is transient/occasional).
+
 ## Still unknown
-- Meaning of the `1/6` suffix (are there m02/m03 drying recipes?); 1/65, 2/5
+- Meaning of the `1/6` suffix (are there m02/m03 drying recipes?)
+- `1/65` (static `3`) and `2/5` (static `0`) — values seen but semantics unconfirmed;
+  neither tracks the cycle, so neither is worth a live entity yet.
 - Whether `2/3` has other values (e.g. 1 for a third operation)
 - The command/write channel (for start/stop/mode control) — HTTP relay gives 80001;
   commands likely need an MQTT publish to a request topic (not yet reverse-engineered).
