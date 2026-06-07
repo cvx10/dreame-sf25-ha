@@ -27,11 +27,13 @@ This integration therefore:
 
 | Entity | Type | Source (siid/piid) | Notes |
 |--------|------|--------------------|-------|
+| Activity | sensor (enum) | derived | unified state: `drying` / `cleaning` / `paused` / `idle` / `running` |
 | Status | sensor (enum) | 2/1 | `running` / `idle` / `finishing` |
 | Run State | sensor (enum) | 2/10 | `running` / `paused` / `stopped` |
 | Mode | sensor (enum) | 2/3 | `drying` / `cleaning` / `idle` |
 | Program | sensor (diagnostic) | 1/6 | raw program code (e.g. `m01`) |
 | Time Remaining | sensor (min) | 2/11 | counts down; frozen while paused (drying 360, cleaning 90) |
+| Estimated Finish | sensor (timestamp) | derived | when the running cycle is expected to end |
 | Temperature | sensor (°C) | 3/14 | internal temperature |
 | Cycle Progress | sensor (%) | derived | from time remaining vs the per-mode cycle length |
 | Lid | binary_sensor (opening) | 6/11 | open / closed |
@@ -39,6 +41,10 @@ This integration therefore:
 
 > Property map confirmed by MQTT sniffing on a real SF25. See
 > [`docs/PROTOCOL.md`](docs/PROTOCOL.md) for the full reverse-engineering notes.
+>
+> Entities report `unavailable` while the MQTT link is down, rather than showing
+> a stale value. The derived `Activity` sensor is the simplest single entity to
+> watch on a dashboard.
 
 This first release is **read-only** (sensors). Control entities (start/stop/pause,
 mode select) are planned once the command channel is verified.

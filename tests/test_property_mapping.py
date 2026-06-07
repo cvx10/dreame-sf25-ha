@@ -150,6 +150,48 @@ def test_pause_freezes_time():
     assert s1["time_remaining"] == s2["time_remaining"] == 326
 
 
+def test_activity_state_mapping():
+    """The unified activity state folds run_flag + mode into one value."""
+    # Running → distinguished by mode
+    assert const.activity_state(1, 0) == "drying"
+    assert const.activity_state(1, 2) == "cleaning"
+    assert const.activity_state(1, None) == "running"   # running, mode unknown
+    assert const.activity_state(1, 99) == "running"     # unexpected mode
+    # Paused
+    assert const.activity_state(0, 0) == "paused"
+    # Stopped / at-rest both collapse to idle
+    assert const.activity_state(-1, -1) == "idle"
+    assert const.activity_state(None, None) == "idle"
+    # Every result is a declared ENUM option
+    for rf in (1, 0, -1, None):
+        for md in (0, 2, -1, None, 99):
+            assert const.activity_state(rf, md) in const.ACTIVITY_STATES
+
+
+def test_stop_vs_pause_truth_table():
+    """2026-06-07 capture: stop resets mode/time, pause freezes them.
+
+    Confirms run_flag is the discriminator (status is 2 for both pause and stop).
+    """
+    paused = _replay([{"payload": {"data": {"method": "properties_changed", "params": [
+        {"siid": 2, "piid": 1, "value": 2},    # status idle-like
+        {"siid": 2, "piid": 3, "value": 0},    # mode still drying
+        {"siid": 2, "piid": 10, "value": 0},   # run_flag paused
+        {"siid": 2, "piid": 11, "value": 354}, # time frozen
+    ]}}}])
+    stopped = _replay([{"payload": {"data": {"method": "properties_changed", "params": [
+        {"siid": 2, "piid": 1, "value": 2},    # status idle-like (same as pause!)
+        {"siid": 2, "piid": 3, "value": -1},   # mode reset
+        {"siid": 2, "piid": 10, "value": -1},  # run_flag stopped
+        {"siid": 2, "piid": 11, "value": 0},   # time wiped
+    ]}}}])
+    # Same status, different run_flag → run_flag is the discriminator.
+    assert paused["status"] == stopped["status"] == 2
+    assert const.activity_state(paused["run_flag"], paused["mode"]) == "paused"
+    assert const.activity_state(stopped["run_flag"], stopped["mode"]) == "idle"
+    assert paused["time_remaining"] == 354 and stopped["time_remaining"] == 0
+
+
 if __name__ == "__main__":
     # Allow running without pytest
     import traceback

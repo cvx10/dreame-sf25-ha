@@ -53,6 +53,11 @@ class DreameSF25Coordinator(DataUpdateCoordinator[dict[str, Any]]):
         )
         self.model_id = device.get("model", "dreame.fwd.u2527")
         self._mqtt: DreameMqttClient | None = None
+        # Whether the MQTT link is currently up. Entities expose this as their
+        # availability: while the link is down we genuinely don't know the
+        # device state, so entities should read 'unavailable' rather than show
+        # a stale value as if it were live.
+        self.mqtt_connected = False
         # Start with an empty state; values fill in as MQTT messages arrive.
         self.data = {}
 
@@ -108,7 +113,18 @@ class DreameSF25Coordinator(DataUpdateCoordinator[dict[str, Any]]):
         self.async_set_updated_data(new_data)
 
     def _handle_connection_change(self, connected: bool) -> None:
+        """Track MQTT link state (called from the paho network thread)."""
         _LOGGER.debug("MQTT connection changed: connected=%s", connected)
+        # Bounce onto the event loop before touching HA state / listeners.
+        self.hass.loop.call_soon_threadsafe(self._async_set_connected, connected)
+
+    @callback
+    def _async_set_connected(self, connected: bool) -> None:
+        if self.mqtt_connected == connected:
+            return
+        self.mqtt_connected = connected
+        # Re-evaluate entity availability without mutating self.data.
+        self.async_update_listeners()
 
     # ------------------------------------------------------------------
     # Control (best-effort, via DreameHome HTTP relay)

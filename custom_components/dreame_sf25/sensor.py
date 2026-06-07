@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from datetime import datetime, timedelta
 from typing import Any, Callable
 
 from homeassistant.components.sensor import (
@@ -16,8 +17,10 @@ from homeassistant.const import EntityCategory, PERCENTAGE, UnitOfTemperature, U
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
+from homeassistant.util import dt as dt_util
 
 from .const import (
+    ACTIVITY_STATES,
     DOMAIN,
     FULL_CYCLE_MINUTES,
     MANUFACTURER,
@@ -32,6 +35,7 @@ from .const import (
     PROP_TIME_REMAINING,
     RUN_FLAG_CODES,
     STATUS_CODES,
+    activity_state,
 )
 from .coordinator import DreameSF25Coordinator
 
@@ -108,6 +112,10 @@ SENSOR_DESCRIPTIONS: tuple[SF25SensorDescription, ...] = (
 
 # A derived progress sensor (0–100%) computed from the remaining time.
 PROGRESS_KEY = "progress"
+# A derived timestamp sensor: when the running cycle is expected to finish.
+FINISH_KEY = "estimated_finish"
+# A derived enum sensor unifying status + run_flag + mode into one clear state.
+ACTIVITY_KEY = "activity"
 
 # Sentinel: the coordinator has not yet received this property (vs. a real None).
 _MISSING = object()
@@ -125,6 +133,8 @@ async def async_setup_entry(
         for description in SENSOR_DESCRIPTIONS
     ]
     entities.append(DreameSF25ProgressSensor(coordinator, entry.entry_id))
+    entities.append(DreameSF25ActivitySensor(coordinator, entry.entry_id))
+    entities.append(DreameSF25FinishSensor(coordinator, entry.entry_id))
     async_add_entities(entities)
 
 
@@ -168,6 +178,12 @@ class _BaseSF25Sensor(CoordinatorEntity[DreameSF25Coordinator], RestoreSensor):
         value = self._fresh_native_value()
         # Fall back to the restored value only while the property is absent.
         return self._restored_native_value if value is _MISSING else value
+
+    @property
+    def available(self) -> bool:
+        # While the MQTT link is down we cannot trust any value: report
+        # 'unavailable' rather than showing a stale state as if it were live.
+        return self.coordinator.mqtt_connected
 
 
 class DreameSF25Sensor(_BaseSF25Sensor):
@@ -218,3 +234,60 @@ class DreameSF25ProgressSensor(_BaseSF25Sensor):
         total = MODE_DURATIONS.get(data.get(PROP_MODE), FULL_CYCLE_MINUTES)
         remaining = max(0, min(total, remaining))
         return round((total - remaining) / total * 100)
+
+
+class DreameSF25ActivitySensor(_BaseSF25Sensor):
+    """Unified activity state combining status, run flag and mode.
+
+    The raw device splits its state across three properties: 2/1 (status, which
+    is 2 for idle/paused/stopped alike), 2/10 (run_flag, the real run-state
+    discriminator) and 2/3 (mode). This sensor folds them into one readable
+    state so a dashboard does not have to reconcile three entities.
+    """
+
+    _attr_name = "Activity"
+    _attr_icon = "mdi:leaf"
+    _attr_device_class = SensorDeviceClass.ENUM
+    _attr_options = ACTIVITY_STATES
+
+    def __init__(self, coordinator: DreameSF25Coordinator, entry_id: str) -> None:
+        super().__init__(coordinator, entry_id, ACTIVITY_KEY)
+
+    def _fresh_native_value(self) -> Any:
+        data = self.coordinator.data or {}
+        if PROP_RUN_FLAG not in data:
+            return _MISSING
+        return activity_state(data.get(PROP_RUN_FLAG), data.get(PROP_MODE))
+
+
+class DreameSF25FinishSensor(_BaseSF25Sensor):
+    """Estimated finish time (timestamp) derived from the remaining minutes.
+
+    Only meaningful while a cycle is actively running. The value is recomputed
+    only when the remaining time changes, so it stays stable between the
+    once-a-minute countdown ticks instead of drifting on every read.
+    """
+
+    _attr_name = "Estimated Finish"
+    _attr_icon = "mdi:clock-end"
+    _attr_device_class = SensorDeviceClass.TIMESTAMP
+
+    def __init__(self, coordinator: DreameSF25Coordinator, entry_id: str) -> None:
+        super().__init__(coordinator, entry_id, FINISH_KEY)
+        self._last_remaining: int | None = None
+        self._finish_at: datetime | None = None
+
+    def _fresh_native_value(self) -> Any:
+        data = self.coordinator.data or {}
+        if PROP_TIME_REMAINING not in data:
+            return _MISSING
+        remaining = data[PROP_TIME_REMAINING]
+        # Only show a finish time while a cycle is actually running.
+        if data.get(PROP_RUN_FLAG) != 1 or not remaining or remaining <= 0:
+            self._last_remaining = None
+            self._finish_at = None
+            return None
+        if remaining != self._last_remaining:
+            self._last_remaining = remaining
+            self._finish_at = dt_util.utcnow() + timedelta(minutes=remaining)
+        return self._finish_at

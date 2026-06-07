@@ -4,6 +4,28 @@ All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/);
 this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.5.0] — 2026-06-07
+
+### Added
+- **MQTT availability.** Entities now report `unavailable` while the MQTT link
+  to the DreameHome broker is down, instead of showing a stale value as if it
+  were live. The coordinator tracks the connection state and re-evaluates
+  entity availability on connect/disconnect. As soon as the link is back, the
+  restored last-known value shows again until fresh data is pushed.
+- **Estimated Finish** sensor (`timestamp`): when a cycle is running, exposes
+  when it is expected to end, derived from the remaining minutes. Recomputed
+  only when the remaining time changes, so it stays stable between ticks.
+- **Activity** sensor (`enum`): folds status + run flag + mode into one readable
+  state — `drying` / `cleaning` / `paused` / `idle` / `running`. Confirmed by the
+  2026-06-07 capture that `run_flag` (2/10), not `status` (2/1), is the real
+  run-state discriminator (status reads 2 for idle/paused/stopped alike).
+
+### Documentation / tests
+- `docs/PROTOCOL.md`: added the run-state truth table; corrected `1/65` and `2/5`
+  notes (both static, not cycle-phase indicators); noted there is no fill sensor.
+- Added unit tests for `activity_state()` and the stop-vs-pause truth table
+  (10/10 passing).
+
 ## [0.4.0] — 2026-06-01
 
 ### Added

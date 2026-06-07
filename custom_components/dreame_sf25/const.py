@@ -76,3 +76,22 @@ MODE_DURATIONS: Final = {
     0: 360,   # drying
     2: 90,    # cleaning
 }
+
+# Unified activity state: folds status (2/1) + run_flag (2/10) + mode (2/3) into
+# one readable value. The 2026-06-07 capture confirmed run_flag is the real
+# run-state discriminator (status is 2 for idle/paused/stopped alike).
+ACTIVITY_STATES: Final = ["idle", "drying", "cleaning", "paused", "running"]
+
+
+def activity_state(run_flag: int | None, mode: int | None) -> str:
+    """Map (run_flag, mode) to a single readable activity state.
+
+    Pure function (no Home Assistant deps) so it can be unit-tested directly.
+    Caller should only invoke this once run_flag has actually been received.
+    """
+    if run_flag == 1:  # running → distinguish by operation
+        return {0: "drying", 2: "cleaning"}.get(mode, "running")
+    if run_flag == 0:
+        return "paused"
+    # run_flag -1 (stopped) and the at-rest baseline are indistinguishable.
+    return "idle"

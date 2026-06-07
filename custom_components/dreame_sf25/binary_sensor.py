@@ -109,3 +109,8 @@ class DreameSF25BinarySensor(
             # Not pushed since startup → show last known state.
             return self._restored_is_on
         return self.entity_description.is_on_fn(data[key])
+
+    @property
+    def available(self) -> bool:
+        # Unavailable while the MQTT link is down (state would be stale).
+        return self.coordinator.mqtt_connected
