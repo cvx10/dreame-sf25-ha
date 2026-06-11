@@ -4,6 +4,17 @@ All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/);
 this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.6.0] — 2026-06-11
+
+### Changed
+- **Temperature sensor is now an Energy sensor (breaking).** Property `3/14`
+  turned out to be a cumulative heater-energy counter (Wh), not a temperature:
+  it resets to 0 at cycle start and climbs monotonically for the whole cycle
+  (reaching 525 after ~5 h — impossible for °C) instead of plateauing. The
+  entity is replaced by `Energy` (`device_class: energy`, unit Wh,
+  `state_class: total_increasing`, resets each cycle). The old
+  `sensor.*_temperature` entity is orphaned and can be deleted.
+
 ## [0.5.0] — 2026-06-07
 
 ### Added

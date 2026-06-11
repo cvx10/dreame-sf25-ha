@@ -56,7 +56,7 @@ The icon is green while a cycle runs, amber when paused, grey when idle.
         {% else %}Au repos{% endif %}
       secondary: >-
         {% set r = states('sensor.burnthemall_run_state') %}
-        {% if r in ['running','paused'] %}{{ states('sensor.burnthemall_temperature') }} °C
+        {% if r in ['running','paused'] %}{{ states('sensor.burnthemall_energy') }} Wh
         {% else %}Prêt à démarrer{% endif %}
       icon: mdi:compost
       icon_color: >-
@@ -126,7 +126,7 @@ The icon is green while a cycle runs, amber when paused, grey when idle.
   send a command to the device.
 - The popup is intentionally compact: a product photo was tried but removed —
   it took too much vertical space and added no information. **Each datum appears
-  exactly once**: state + mode in the header primary, temperature in the header
+  exactly once**: state + mode in the header primary, heater energy (Wh) in the header
   secondary, % in the progress-bar primary, remaining time + finish in the
   progress-bar secondary, lid in its own row when idle. A 4-tile detail grid
   (temp/time/finish/mode) was tried and removed — it duplicated every one of

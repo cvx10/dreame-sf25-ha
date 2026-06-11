@@ -32,7 +32,7 @@ PROP_STATUS: Final = "status"               # 2/1  — main status (1=running, 2
 PROP_LID_ALERT: Final = "lid_alert"         # 2/2  — lid-open alert (0=ok, 1=open)
 PROP_RUN_FLAG: Final = "run_flag"           # 2/10 — run flag (1=run, 0=paused, -1=stopped)
 PROP_TIME_REMAINING: Final = "time_remaining"  # 2/11 — remaining cycle time (minutes)
-PROP_TEMPERATURE: Final = "temperature"     # 3/14 — internal temperature (°C)
+PROP_ENERGY: Final = "energy"               # 3/14 — cumulative heater energy (Wh), resets at cycle start
 PROP_LID: Final = "lid"                     # 6/11 — lid/cover sensor (1=open, 0=closed)
 
 # Confirmed MIoT property table. Format: {prop_key: {"siid": X, "piid": Y}}
@@ -44,7 +44,7 @@ PROPERTY_MAPPING: Final[dict[str, dict[str, int]]] = {
     PROP_MODE:           {"siid": 2, "piid": 3},
     PROP_RUN_FLAG:       {"siid": 2, "piid": 10},
     PROP_TIME_REMAINING: {"siid": 2, "piid": 11},
-    PROP_TEMPERATURE:    {"siid": 3, "piid": 14},
+    PROP_ENERGY:         {"siid": 3, "piid": 14},
     PROP_LID:            {"siid": 6, "piid": 11},
 }
 

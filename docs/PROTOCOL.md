@@ -45,7 +45,7 @@ Messages:
  "data":{"id":N,"method":"properties_changed",
          "params":[{"siid":2,"piid":11,"value":326,"did":"-100000000"}, ...]}}
 ```
-A telemetry heartbeat (time + temperature) arrives roughly every 60 s; full status
+A telemetry heartbeat (time remaining + energy) arrives roughly every 60 s; full status
 blocks arrive on state changes (start/pause/stop/lid).
 
 ## Confirmed property map
@@ -60,7 +60,7 @@ drying cycle (2026-05-31) and a self-cleaning cycle (2026-06-01).
 | 2/3  | **Operation / mode** | **0=drying, 2=cleaning, -1=idle/stopped** |
 | 2/10 | Run flag | 1=running, 0=paused, -1=stopped |
 | 2/11 | Time remaining (min) | counts down 1/min; **frozen while paused**; 0 on stop; **360 for drying, 90 for cleaning** at fresh start |
-| 3/14 | Temperature (°C) | 0 at cold start; rises during drying (saw up to 127); stays 0 during cleaning |
+| 3/14 | **Cumulative heater energy (Wh)** — NOT temperature | resets to 0 at cycle start; ramps ~7→3/min during heat-up, then ~1/min; climbs monotonically (saw 525 after ~5 h of drying); stays 0 during cleaning (no heater) |
 | 6/11 | Lid/cover | 1=open, 0=closed |
 | 1/65 | unknown — **static**, NOT a cycle phase | seen `3`, emitted once ~25 s after a fresh start, then never re-pushed through pause/resume/stop/restart. Sticky config or total-cycle counter, not a live indicator. |
 | 2/5  | unknown — **static**, likely fault code | always `0` across idle/run/pause/stop. Probably "no error". Only expected to change on a real fault. |
@@ -70,6 +70,15 @@ drying cycle (2026-05-31) and a self-cleaning cycle (2026-06-01).
 > stayed `m01` while the device cleaned. The real operation discriminator is
 > **`2/3`** (0=drying, 2=cleaning). `1/6` is exposed as a separate diagnostic
 > "Program" sensor.
+
+> **Correction (2026-06-11):** `3/14` was long believed to be a temperature
+> (the early "105→127 over 10 min" observation looked like a heat-up curve).
+> A full-cycle history disproved it: the value resets to 0 at cycle start and
+> climbs monotonically for the whole 6-hour cycle without ever plateauing,
+> reaching 525 — impossible for °C. The increment rate (~7/min during heat-up,
+> ~1/min once warm) matches a heater **energy counter in Wh** (~420 W ramp,
+> then duty-cycled). It is now exposed as an Energy sensor
+> (`state_class: total_increasing`).
 
 ### Other MQTT message types (not `properties_changed`)
 - `_otc.info`: WiFi diagnostics — `{ap:{ssid, rssi, strength, channel}, model}`.

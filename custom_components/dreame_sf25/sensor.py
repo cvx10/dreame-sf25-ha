@@ -13,7 +13,7 @@ from homeassistant.components.sensor import (
     SensorStateClass,
 )
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import EntityCategory, PERCENTAGE, UnitOfTemperature, UnitOfTime
+from homeassistant.const import EntityCategory, PERCENTAGE, UnitOfEnergy, UnitOfTime
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
@@ -31,7 +31,7 @@ from .const import (
     PROP_PROGRAM,
     PROP_RUN_FLAG,
     PROP_STATUS,
-    PROP_TEMPERATURE,
+    PROP_ENERGY,
     PROP_TIME_REMAINING,
     RUN_FLAG_CODES,
     STATUS_CODES,
@@ -101,12 +101,16 @@ SENSOR_DESCRIPTIONS: tuple[SF25SensorDescription, ...] = (
         state_class=SensorStateClass.MEASUREMENT,
     ),
     SF25SensorDescription(
-        key=PROP_TEMPERATURE,
-        name="Temperature",
-        icon="mdi:thermometer",
-        device_class=SensorDeviceClass.TEMPERATURE,
-        native_unit_of_measurement=UnitOfTemperature.CELSIUS,
-        state_class=SensorStateClass.MEASUREMENT,
+        # 3/14 was long believed to be a temperature, but a full-cycle history
+        # showed it is a cumulative counter: resets to 0 at cycle start, ramps
+        # fast during heat-up, then climbs monotonically (~1/min) without ever
+        # plateauing — consistent with heater energy in Wh, not °C.
+        key=PROP_ENERGY,
+        name="Energy",
+        icon="mdi:lightning-bolt",
+        device_class=SensorDeviceClass.ENERGY,
+        native_unit_of_measurement=UnitOfEnergy.WATT_HOUR,
+        state_class=SensorStateClass.TOTAL_INCREASING,
     ),
 )
 

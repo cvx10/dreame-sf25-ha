@@ -92,7 +92,7 @@ def test_replay_sample_capture():
     assert state["lid"] == 0           # ends closed after open/close
     assert state["lid_alert"] == 0     # alert cleared after close
     assert state["time_remaining"] == 354
-    assert state["temperature"] == 15
+    assert state["energy"] == 15
 
     # Value transforms
     assert const.MODE_CODES[state["mode"]] == "drying"

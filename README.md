@@ -34,7 +34,7 @@ This integration therefore:
 | Program | sensor (diagnostic) | 1/6 | raw program code (e.g. `m01`) |
 | Time Remaining | sensor (min) | 2/11 | counts down; frozen while paused (drying 360, cleaning 90) |
 | Estimated Finish | sensor (timestamp) | derived | when the running cycle is expected to end |
-| Temperature | sensor (°C) | 3/14 | internal temperature |
+| Energy | sensor (Wh) | 3/14 | cumulative heater energy, resets at cycle start |
 | Cycle Progress | sensor (%) | derived | from time remaining vs the per-mode cycle length |
 | Lid | binary_sensor (opening) | 6/11 | open / closed |
 | Lid Alert | binary_sensor (problem) | 2/2 | lid-open warning |
