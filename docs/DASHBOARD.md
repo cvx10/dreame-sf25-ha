@@ -25,6 +25,14 @@ The icon is green while a cycle runs, amber when paused, grey when idle.
 
 ## 2. Bubble Card pop-up (placed alongside the other pop-ups in the view)
 
+> **IMPORTANT — full-width layout.** Bubble Card lays the pop-up content `cards:`
+> out in a **12-column grid** (same engine as a `sections` view), so a card with
+> no span defaults to ~half width and two cards sit *side by side*. With
+> `popup_mode: fit-content` that collapsed the whole pop-up to a ~90 px strip
+> pinned to the bottom of the screen, clipping everything. The fix is to give
+> every top-level content card `grid_options: {columns: 12}` so each one takes a
+> full row and the pop-up grows to its natural height.
+
 ```yaml
 - type: custom:bubble-card
   card_type: pop-up
@@ -38,6 +46,7 @@ The icon is green while a cycle runs, amber when paused, grey when idle.
   cards:
     # Header — current state (run_state + mode based, so it survives restarts)
     - type: custom:mushroom-template-card
+      grid_options: {columns: 12}   # full row — without this it renders half-width
       primary: >-
         {% set r = states('sensor.burnthemall_run_state') %}
         {% set m = states('sensor.burnthemall_mode') %}
@@ -47,10 +56,8 @@ The icon is green while a cycle runs, amber when paused, grey when idle.
         {% else %}Au repos{% endif %}
       secondary: >-
         {% set r = states('sensor.burnthemall_run_state') %}
-        {% if r == 'running' %}{{ states('sensor.burnthemall_temperature') }}°C ·
-        {{ states('sensor.burnthemall_time_remaining') }} min
-        {% elif r == 'paused' %}En pause · {{ states('sensor.burnthemall_time_remaining') }} min
-        {% else %}Prêt{% endif %}
+        {% if r in ['running','paused'] %}{{ states('sensor.burnthemall_temperature') }} °C
+        {% else %}Prêt à démarrer{% endif %}
       icon: mdi:compost
       icon_color: >-
         {% set r = states('sensor.burnthemall_run_state') %}
@@ -58,35 +65,49 @@ The icon is green while a cycle runs, amber when paused, grey when idle.
       layout: horizontal
       fill_container: true
       tap_action: {action: none}
-    # Progress bar — a card-mod linear-gradient fills to the cycle %.
-    - type: custom:mushroom-template-card
-      primary: "{% set p = states('sensor.burnthemall_cycle_progress')|int(0) %}Progression — {{ p }}%"
-      secondary: >-
-        {% set r = states('sensor.burnthemall_run_state') %}
-        {% if r == 'running' %}Fin estimée à
-        {{ (as_timestamp(now()) + (states('sensor.burnthemall_time_remaining')|int(0))*60) | timestamp_custom('%H:%M', true) }}
-        {% else %}Aucun cycle en cours{% endif %}
-      icon: mdi:progress-clock
-      icon_color: >-
-        {% set r = states('sensor.burnthemall_run_state') %}
-        {{ 'green' if r == 'running' else 'grey' }}
-      layout: horizontal
-      fill_container: true
-      tap_action: {action: none}
-      card_mod:
-        style: |
-          {% set p = states('sensor.burnthemall_cycle_progress')|int(0) %}
-          ha-card {
-            border: none; box-shadow: none; border-radius: 14px;
-            background: linear-gradient(to right,
-              rgba(var(--rgb-green), 0.30) {{ p }}%,
-              rgba(128,128,128,0.12) {{ p }}%);
-          }
+    # Progress bar — a card-mod linear-gradient fills to the cycle %. Shown
+    # only while a cycle is active (run_state not stopped/unknown/unavailable)
+    # so an idle device doesn't show a dead "0%" bar. The secondary line packs
+    # the remaining time AND the estimated finish into one sentence — each
+    # datum appears exactly once in the popup (no separate tiles).
+    - type: conditional
+      grid_options: {columns: 12}
+      conditions:
+        - {entity: sensor.burnthemall_run_state, state_not: stopped}
+        - {entity: sensor.burnthemall_run_state, state_not: unknown}
+        - {entity: sensor.burnthemall_run_state, state_not: unavailable}
+      card:
+        type: custom:mushroom-template-card
+        primary: "{% set p = states('sensor.burnthemall_cycle_progress')|int(0) %}Progression — {{ p }}%"
+        secondary: >-
+          {% set r = states('sensor.burnthemall_run_state') %}
+          {% set t = states('sensor.burnthemall_time_remaining')|int(0) %}
+          {% set dur = (t//60 ~ 'h' ~ '%02d'|format(t%60)) if t >= 60 else (t ~ ' min') %}
+          {% if r == 'running' %}Encore {{ dur }} · fin à
+          {{ (as_timestamp(now()) + t*60) | timestamp_custom('%H:%M', true) }}
+          {% else %}En pause · encore {{ dur }}{% endif %}
+        icon: mdi:progress-clock
+        icon_color: >-
+          {% set r = states('sensor.burnthemall_run_state') %}
+          {{ 'green' if r == 'running' else 'amber' }}
+        layout: horizontal
+        fill_container: true
+        tap_action: {action: none}
+        card_mod:
+          style: |
+            {% set p = states('sensor.burnthemall_cycle_progress')|int(0) %}
+            ha-card {
+              border: none; box-shadow: none; border-radius: 14px;
+              background: linear-gradient(to right,
+                rgba(var(--rgb-green), 0.30) {{ p }}%,
+                rgba(128,128,128,0.12) {{ p }}%);
+            }
     # Lid status only — and only when NOT running. During a cycle the lid is
     # necessarily closed, so showing it would be noise. The `conditional` card
     # hides the whole row while run_state == running. (The lid-alert binary
     # sensor is intentionally omitted: it duplicates the lid open/closed state.)
     - type: conditional
+      grid_options: {columns: 12}
       conditions:
         - entity: sensor.burnthemall_run_state
           state_not: running
@@ -98,10 +119,18 @@ The icon is green while a cycle runs, amber when paused, grey when idle.
 ```
 
 ## Notes
+- **Display-only / no controls.** Every card uses `tap_action: {action: none}`.
+  The integration is read-only (`PLATFORMS = [SENSOR, BINARY_SENSOR]`, no
+  switch/button/select), so there is no pause/stop/start control to expose — the
+  command channel has never been reverse-engineered. Nothing in this pop-up can
+  send a command to the device.
 - The popup is intentionally compact: a product photo was tried but removed —
-  it took too much vertical space and added no information. The header + progress
-  bar already convey state, temperature, time, % and finish, so the entities list
-  is trimmed to just the two lid sensors to avoid duplication.
+  it took too much vertical space and added no information. **Each datum appears
+  exactly once**: state + mode in the header primary, temperature in the header
+  secondary, % in the progress-bar primary, remaining time + finish in the
+  progress-bar secondary, lid in its own row when idle. A 4-tile detail grid
+  (temp/time/finish/mode) was tried and removed — it duplicated every one of
+  those values.
 - Entity IDs assume the device is named **BurnThemAll**. Adjust the
   `burnthemall_*` slugs if your device has a different name.
 - The header, progress bar and chip deliberately derive from `run_state` +
