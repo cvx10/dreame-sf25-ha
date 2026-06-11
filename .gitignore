@@ -7,3 +7,4 @@ device_info.json
 probe_results.json
 dreame_traffic.json
 mqtt_capture.json
+.claude/settings.local.json
