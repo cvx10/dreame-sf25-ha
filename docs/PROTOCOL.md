@@ -57,9 +57,11 @@ drying cycle (2026-05-31) and a self-cleaning cycle (2026-06-01).
 | 1/6  | Program/recipe code (string) | `m01` — constant across drying AND cleaning, so it is NOT the operation selector. Meaning of suffix unconfirmed. |
 | 2/1  | Status | 1=running, 2=idle, 3=finishing (seen transiently on stop) |
 | 2/2  | Lid alert | 0=ok, 1=lid open |
-| 2/3  | **Operation / mode** | **0=drying, 2=cleaning, -1=idle/stopped** |
+| 2/3  | **Operation / mode** | **0=drying, 2=cleaning, -1=idle/stopped**; after drying ends the device pushes an additional unidentified code while cooling (run_flag stays 1, time=0) — raw value not yet captured, integration derives "cooling" |
 | 2/10 | Run flag | 1=running, 0=paused, -1=stopped |
 | 2/11 | Time remaining (min) | counts down 1/min; **frozen while paused**; 0 on stop; **360 for drying, 90 for cleaning** at fresh start |
+| 3/2  | **Temperature probe A (°C, tentative)** | first seen 2026-07-08 during a cooling phase: oscillates 45↔46 every ~5–15 s. Label unconfirmed until a full drying cycle is observed. |
+| 3/3  | **Temperature probe B (°C, tentative)** | same capture: oscillates 39↔40, runs ~6 °C below 3/2. Same caveat. |
 | 3/14 | **Cumulative heater energy (Wh)** — NOT temperature | resets to 0 at cycle start; ramps ~7→3/min during heat-up, then ~1/min; climbs monotonically (saw 525 after ~5 h of drying); stays 0 during cleaning (no heater) |
 | 6/11 | Lid/cover | 1=open, 0=closed |
 | 1/65 | unknown — **static**, NOT a cycle phase | seen `3`, emitted once ~25 s after a fresh start, then never re-pushed through pause/resume/stop/restart. Sticky config or total-cycle counter, not a live indicator. |
@@ -85,6 +87,10 @@ drying cycle (2026-05-31) and a self-cleaning cycle (2026-06-01).
   Candidate for a future WiFi signal sensor.
 
 ### Observed transitions
+- **Drying end → cooling** (2026-07-08, ~20:11): 2/11→0, 2/3→unidentified code
+  (raw value missed — debug logging was enabled later), 2/1 and 2/10 stay 1.
+  During cooling the device streams 3/2 (45↔46) and 3/3 (39↔40) every few
+  seconds. Status flips to idle only when cooling completes.
 - **Drying start** (idle→run): 2/1→1, 2/3→0, 2/10→1, 2/11→360, 3/14→0, 1/6=`m01`
 - **Cleaning start** (idle→run): 2/1→1, 2/3→2, 2/10→1, 2/11→90, 1/6=`m01`
 - **Pause**: 2/1→2, 2/10→0, 2/11 frozen

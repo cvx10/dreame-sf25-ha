@@ -31,8 +31,8 @@ _REVERSE = {(v["siid"], v["piid"]): k for k, v in const.PROPERTY_MAPPING.items()
 
 
 def test_property_mapping_is_complete_and_unique():
-    # All 8 confirmed properties present
-    assert len(const.PROPERTY_MAPPING) == 8
+    # 8 confirmed properties + 2 tentative temperature probes (3/2, 3/3)
+    assert len(const.PROPERTY_MAPPING) == 10
     # No duplicate (siid, piid) pairs
     pairs = [(v["siid"], v["piid"]) for v in const.PROPERTY_MAPPING.values()]
     assert len(pairs) == len(set(pairs))
@@ -45,6 +45,9 @@ def test_known_siid_piid_pairs():
     assert const.PROPERTY_MAPPING[const.PROP_MODE] == {"siid": 2, "piid": 3}
     # 1/6 is a separate program/recipe code string, exposed as "program".
     assert const.PROPERTY_MAPPING[const.PROP_PROGRAM] == {"siid": 1, "piid": 6}
+    # Tentative temperature probes seen streaming during the cooling phase.
+    assert const.PROPERTY_MAPPING[const.PROP_TEMPERATURE] == {"siid": 3, "piid": 2}
+    assert const.PROPERTY_MAPPING[const.PROP_TEMPERATURE_2] == {"siid": 3, "piid": 3}
 
 
 def test_mode_codes():
@@ -155,8 +158,11 @@ def test_activity_state_mapping():
     # Running → distinguished by mode
     assert const.activity_state(1, 0) == "drying"
     assert const.activity_state(1, 2) == "cleaning"
-    assert const.activity_state(1, None) == "running"   # running, mode unknown
-    assert const.activity_state(1, 99) == "running"     # unexpected mode
+    assert const.activity_state(1, None) == "running"   # running, mode not yet received
+    assert const.activity_state(1, -1) == "running"     # running, mode says idle (transient)
+    # 2026-07-08: post-drying the device keeps run_flag=1 with an unrecognised
+    # mode code while the barrel cools down.
+    assert const.activity_state(1, 99) == "cooling"
     # Paused
     assert const.activity_state(0, 0) == "paused"
     # Stopped / at-rest both collapse to idle

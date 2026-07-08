@@ -33,6 +33,8 @@ PROP_LID_ALERT: Final = "lid_alert"         # 2/2  — lid-open alert (0=ok, 1=o
 PROP_RUN_FLAG: Final = "run_flag"           # 2/10 — run flag (1=run, 0=paused, -1=stopped)
 PROP_TIME_REMAINING: Final = "time_remaining"  # 2/11 — remaining cycle time (minutes)
 PROP_ENERGY: Final = "energy"               # 3/14 — cumulative heater energy (Wh), resets at cycle start
+PROP_TEMPERATURE: Final = "temperature"     # 3/2  — temperature probe A (°C, tentative; ~45 during cooling)
+PROP_TEMPERATURE_2: Final = "temperature_2" # 3/3  — temperature probe B (°C, tentative; ~39 during cooling)
 PROP_LID: Final = "lid"                     # 6/11 — lid/cover sensor (1=open, 0=closed)
 
 # Confirmed MIoT property table. Format: {prop_key: {"siid": X, "piid": Y}}
@@ -45,6 +47,8 @@ PROPERTY_MAPPING: Final[dict[str, dict[str, int]]] = {
     PROP_RUN_FLAG:       {"siid": 2, "piid": 10},
     PROP_TIME_REMAINING: {"siid": 2, "piid": 11},
     PROP_ENERGY:         {"siid": 3, "piid": 14},
+    PROP_TEMPERATURE:    {"siid": 3, "piid": 2},
+    PROP_TEMPERATURE_2:  {"siid": 3, "piid": 3},
     PROP_LID:            {"siid": 6, "piid": 11},
 }
 
@@ -80,7 +84,9 @@ MODE_DURATIONS: Final = {
 # Unified activity state: folds status (2/1) + run_flag (2/10) + mode (2/3) into
 # one readable value. The 2026-06-07 capture confirmed run_flag is the real
 # run-state discriminator (status is 2 for idle/paused/stopped alike).
-ACTIVITY_STATES: Final = ["idle", "drying", "cleaning", "paused", "running"]
+# 2026-07-08: after drying ends the device keeps run_flag=1 but switches mode
+# to a code outside MODE_CODES while it cools down — that phase is "cooling".
+ACTIVITY_STATES: Final = ["idle", "drying", "cleaning", "cooling", "paused", "running"]
 
 
 def activity_state(run_flag: int | None, mode: int | None) -> str:
@@ -90,7 +96,14 @@ def activity_state(run_flag: int | None, mode: int | None) -> str:
     Caller should only invoke this once run_flag has actually been received.
     """
     if run_flag == 1:  # running → distinguish by operation
-        return {0: "drying", 2: "cleaning"}.get(mode, "running")
+        if mode in (0, 2):
+            return {0: "drying", 2: "cleaning"}[mode]
+        if mode is None or mode == -1:
+            # mode not received yet (e.g. right after a restart) — can't tell.
+            return "running"
+        # Running with a mode code we don't recognise: observed post-drying
+        # while the barrel cools (raw code not yet captured; debug log will).
+        return "cooling"
     if run_flag == 0:
         return "paused"
     # run_flag -1 (stopped) and the at-rest baseline are indistinguishable.

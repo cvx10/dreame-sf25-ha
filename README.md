@@ -27,7 +27,7 @@ This integration therefore:
 
 | Entity | Type | Source (siid/piid) | Notes |
 |--------|------|--------------------|-------|
-| Activity | sensor (enum) | derived | unified state: `drying` / `cleaning` / `paused` / `idle` / `running` |
+| Activity | sensor (enum) | derived | unified state: `drying` / `cleaning` / `cooling` / `paused` / `idle` / `running` |
 | Status | sensor (enum) | 2/1 | `running` / `idle` / `finishing` |
 | Run State | sensor (enum) | 2/10 | `running` / `paused` / `stopped` |
 | Mode | sensor (enum) | 2/3 | `drying` / `cleaning` / `idle` |
@@ -35,6 +35,8 @@ This integration therefore:
 | Time Remaining | sensor (min) | 2/11 | counts down; frozen while paused (drying 360, cleaning 90) |
 | Estimated Finish | sensor (timestamp) | derived | when the running cycle is expected to end |
 | Energy | sensor (Wh) | 3/14 | cumulative heater energy, resets at cycle start |
+| Temperature | sensor (°C) | 3/2 | probe A — tentative label, first seen streaming during cooling (~45) |
+| Temperature 2 | sensor (°C) | 3/3 | probe B — tentative label, runs ~6 °C below probe A (~39) |
 | Cycle Progress | sensor (%) | derived | from time remaining vs the per-mode cycle length |
 | Lid | binary_sensor (opening) | 6/11 | open / closed |
 | Lid Alert | binary_sensor (problem) | 2/2 | lid-open warning |
