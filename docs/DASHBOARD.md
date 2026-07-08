@@ -44,19 +44,28 @@ The icon is green while a cycle runs, amber when paused, grey when idle.
   slide_to_close_distance: '100'
   popup_mode: fit-content
   cards:
-    # Header — current state (run_state + mode based, so it survives restarts)
+    # Header — current state (run_state + mode based, so it survives restarts;
+    # the cooling phase comes from the derived Activity sensor, v0.6.1+)
     - type: custom:mushroom-template-card
       grid_options: {columns: 12}   # full row — without this it renders half-width
       primary: >-
         {% set r = states('sensor.burnthemall_run_state') %}
         {% set m = states('sensor.burnthemall_mode') %}
-        {% if r == 'running' %}{{ 'Nettoyage en cours' if m == 'cleaning' else 'Séchage en cours' }}
+        {% set a = states('sensor.burnthemall_activity') %}
+        {% if a == 'cooling' %}Refroidissement
+        {% elif r == 'running' %}{{ 'Nettoyage en cours' if m == 'cleaning' else 'Séchage en cours' }}
         {% elif r == 'paused' %}En pause
         {% elif r in ['unknown','unavailable'] %}Indisponible
         {% else %}Au repos{% endif %}
       secondary: >-
         {% set r = states('sensor.burnthemall_run_state') %}
-        {% if r in ['running','paused'] %}{{ states('sensor.burnthemall_energy') }} Wh
+        {% set a = states('sensor.burnthemall_activity') %}
+        {% set e = states('sensor.burnthemall_energy') %}
+        {% set tp = states('sensor.burnthemall_temperature') %}
+        {% if a == 'cooling' %}{{ ((e ~ ' Wh') if e not in ['unknown','unavailable'] else '')
+          ~ (' · ' if (e not in ['unknown','unavailable'] and tp not in ['unknown','unavailable']) else '')
+          ~ ((tp ~ ' °C') if tp not in ['unknown','unavailable'] else '') }}
+        {% elif r in ['running','paused'] %}{{ (e ~ ' Wh') if e not in ['unknown','unavailable'] else '' }}
         {% else %}Prêt à démarrer{% endif %}
       icon: mdi:compost
       icon_color: >-
@@ -78,18 +87,24 @@ The icon is green while a cycle runs, amber when paused, grey when idle.
         - {entity: sensor.burnthemall_run_state, state_not: unavailable}
       card:
         type: custom:mushroom-template-card
-        primary: "{% set p = states('sensor.burnthemall_cycle_progress')|int(0) %}Progression — {{ p }}%"
+        primary: >-
+          {% set a = states('sensor.burnthemall_activity') %}
+          {% set p = states('sensor.burnthemall_cycle_progress')|int(0) %}
+          {% if a == 'cooling' %}Refroidissement{% else %}Progression — {{ p }}%{% endif %}
         secondary: >-
+          {% set a = states('sensor.burnthemall_activity') %}
           {% set r = states('sensor.burnthemall_run_state') %}
           {% set t = states('sensor.burnthemall_time_remaining')|int(0) %}
           {% set dur = (t//60 ~ 'h' ~ '%02d'|format(t%60)) if t >= 60 else (t ~ ' min') %}
-          {% if r == 'running' %}Encore {{ dur }} · fin à
+          {% if a == 'cooling' %}{% set tp = states('sensor.burnthemall_temperature') %}Cycle terminé · en refroidissement{{ (' · ' ~ tp ~ ' °C') if tp not in ['unknown','unavailable'] else '' }}
+          {% elif r == 'running' %}Encore {{ dur }} · fin à
           {{ (as_timestamp(now()) + t*60) | timestamp_custom('%H:%M', true) }}
           {% else %}En pause · encore {{ dur }}{% endif %}
-        icon: mdi:progress-clock
+        icon: "{{ 'mdi:snowflake' if is_state('sensor.burnthemall_activity','cooling') else 'mdi:progress-clock' }}"
         icon_color: >-
+          {% set a = states('sensor.burnthemall_activity') %}
           {% set r = states('sensor.burnthemall_run_state') %}
-          {{ 'green' if r == 'running' else 'amber' }}
+          {{ 'blue' if a == 'cooling' else ('green' if r == 'running' else 'amber') }}
         layout: horizontal
         fill_container: true
         tap_action: {action: none}
@@ -135,9 +150,13 @@ The icon is green while a cycle runs, amber when paused, grey when idle.
   `burnthemall_*` slugs if your device has a different name.
 - The header, progress bar and chip deliberately derive from `run_state` +
   `mode` + `time_remaining` (which `RestoreSensor` restores on startup) rather
-  than the derived `Activity` / `Estimated Finish` sensors. Those derived
-  sensors need a fresh `run_flag` push (only sent on a state change), so right
-  after a restart mid-cycle they read `unknown` until the next transition. The
-  restore-backed properties keep the popup correct immediately.
+  than the derived `Estimated Finish` sensor. The `Activity` sensor is used
+  only for the **cooling** branch (v0.6.1+): after drying ends the device keeps
+  `run_flag=1` with `time_remaining=0` and an unrecognised mode code, which
+  Activity maps to `cooling`. Activity is restore-backed too, so a restart
+  mid-cooling keeps the label.
+- During cooling the header secondary shows the cycle's total energy and the
+  new tentative Temperature sensor (3/2); the progress bar swaps to a snowflake
+  with "Cycle terminé · en refroidissement".
 - The progress-bar fill is a `card-mod` `linear-gradient` whose stop position is
   the `cycle_progress` percentage (`|int(0)` guards the `unknown` case → 0%).
