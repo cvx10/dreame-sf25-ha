@@ -317,12 +317,30 @@ class DreameSF25FinishSensor(_BaseSF25Sensor):
         if PROP_TIME_REMAINING not in data:
             return _MISSING
         remaining = data[PROP_TIME_REMAINING]
-        # Only show a finish time while a cycle is actually running.
-        if data.get(PROP_RUN_FLAG) != 1 or not remaining or remaining <= 0:
+        # Only show a finish time while a cycle is actually running. The run
+        # flag (2/10) is only pushed on transitions, so after a mid-cycle HA
+        # restart it is absent until the next start/pause/stop: treat absent
+        # as running instead of hiding the finish time for the rest of the
+        # cycle.
+        if PROP_RUN_FLAG in data and data[PROP_RUN_FLAG] != 1:
             self._last_remaining = None
             self._finish_at = None
             return None
-        if remaining != self._last_remaining:
+        if not remaining or remaining <= 0:
+            self._last_remaining = None
+            self._finish_at = None
+            return None
+        candidate = dt_util.utcnow() + timedelta(minutes=remaining)
+        # Recompute when the countdown ticks, but also re-anchor when the
+        # device holds the countdown (adaptive drying pauses 2/11 while
+        # humidity is high): a frozen remaining would otherwise let the
+        # stored finish drift into the past. 5 min of skew keeps the value
+        # stable across normal once-a-minute ticks.
+        if (
+            remaining != self._last_remaining
+            or self._finish_at is None
+            or abs((candidate - self._finish_at).total_seconds()) > 300
+        ):
             self._last_remaining = remaining
-            self._finish_at = dt_util.utcnow() + timedelta(minutes=remaining)
+            self._finish_at = candidate
         return self._finish_at
