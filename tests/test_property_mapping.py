@@ -45,9 +45,11 @@ def test_known_siid_piid_pairs():
     assert const.PROPERTY_MAPPING[const.PROP_MODE] == {"siid": 2, "piid": 3}
     # 1/6 is a separate program/recipe code string, exposed as "program".
     assert const.PROPERTY_MAPPING[const.PROP_PROGRAM] == {"siid": 1, "piid": 6}
-    # Tentative temperature probes seen streaming during the cooling phase.
-    assert const.PROPERTY_MAPPING[const.PROP_TEMPERATURE] == {"siid": 3, "piid": 2}
-    assert const.PROPERTY_MAPPING[const.PROP_TEMPERATURE_2] == {"siid": 3, "piid": 3}
+    # Confirmed by the 2026-07-10 full-cycle capture: 3/2 tracks humidity
+    # (57 idle → 71 spike → 34 dried), 3/3 is the chamber temperature
+    # (30 idle → 143 plateau while drying).
+    assert const.PROPERTY_MAPPING[const.PROP_HUMIDITY] == {"siid": 3, "piid": 2}
+    assert const.PROPERTY_MAPPING[const.PROP_TEMPERATURE] == {"siid": 3, "piid": 3}
 
 
 def test_mode_codes():

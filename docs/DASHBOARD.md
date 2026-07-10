@@ -156,7 +156,8 @@ The icon is green while a cycle runs, amber when paused, grey when idle.
   Activity maps to `cooling`. Activity is restore-backed too, so a restart
   mid-cooling keeps the label.
 - During cooling the header secondary shows the cycle's total energy and the
-  new tentative Temperature sensor (3/2); the progress bar swaps to a snowflake
-  with "Cycle terminé · en refroidissement".
+  chamber Temperature sensor (3/3, v0.6.2 — falls from ~143 °C toward ~37 °C
+  as the barrel cools); the progress bar swaps to a snowflake with
+  "Cycle terminé · en refroidissement".
 - The progress-bar fill is a `card-mod` `linear-gradient` whose stop position is
   the `cycle_progress` percentage (`|int(0)` guards the `unknown` case → 0%).

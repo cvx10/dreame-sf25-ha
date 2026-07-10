@@ -38,8 +38,8 @@ from .const import (
     PROP_RUN_FLAG,
     PROP_STATUS,
     PROP_ENERGY,
+    PROP_HUMIDITY,
     PROP_TEMPERATURE,
-    PROP_TEMPERATURE_2,
     PROP_TIME_REMAINING,
     RUN_FLAG_CODES,
     STATUS_CODES,
@@ -121,21 +121,23 @@ SENSOR_DESCRIPTIONS: tuple[SF25SensorDescription, ...] = (
         state_class=SensorStateClass.TOTAL_INCREASING,
     ),
     SF25SensorDescription(
-        # 3/2 — tentative temperature probe A. First observed 2026-07-08 during
-        # a cooling phase, hovering 45–46 (plausible °C for a cooling barrel).
-        # Label to be confirmed against a full drying cycle.
-        key=PROP_TEMPERATURE,
-        name="Temperature",
-        icon="mdi:thermometer",
-        device_class=SensorDeviceClass.TEMPERATURE,
-        native_unit_of_measurement=UnitOfTemperature.CELSIUS,
+        # 3/2 — chamber humidity. A full drying cycle (2026-07-10) settled the
+        # label: ~57 at rest (indoor RH), spikes ~71 when the wet load heats up,
+        # then declines to ~34 as it dries, and drifts back up after the cycle.
+        # A temperature cannot follow that shape; relative humidity does.
+        key=PROP_HUMIDITY,
+        name="Humidity",
+        icon="mdi:water-percent",
+        device_class=SensorDeviceClass.HUMIDITY,
+        native_unit_of_measurement=PERCENTAGE,
         state_class=SensorStateClass.MEASUREMENT,
     ),
     SF25SensorDescription(
-        # 3/3 — tentative temperature probe B (ran ~6 °C below 3/2 while
-        # cooling: 39–40). Same caveat as 3/2.
-        key=PROP_TEMPERATURE_2,
-        name="Temperature 2",
+        # 3/3 — chamber temperature, confirmed by the same cycle: ~30 °C idle
+        # (ambient), ramps to ~141 within 10 min of start, plateaus at 142-143
+        # for the whole drying phase, falls to ~37 by the end of cooling.
+        key=PROP_TEMPERATURE,
+        name="Temperature",
         icon="mdi:thermometer",
         device_class=SensorDeviceClass.TEMPERATURE,
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,

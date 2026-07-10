@@ -33,8 +33,8 @@ PROP_LID_ALERT: Final = "lid_alert"         # 2/2  — lid-open alert (0=ok, 1=o
 PROP_RUN_FLAG: Final = "run_flag"           # 2/10 — run flag (1=run, 0=paused, -1=stopped)
 PROP_TIME_REMAINING: Final = "time_remaining"  # 2/11 — remaining cycle time (minutes)
 PROP_ENERGY: Final = "energy"               # 3/14 — cumulative heater energy (Wh), resets at cycle start
-PROP_TEMPERATURE: Final = "temperature"     # 3/2  — temperature probe A (°C, tentative; ~45 during cooling)
-PROP_TEMPERATURE_2: Final = "temperature_2" # 3/3  — temperature probe B (°C, tentative; ~39 during cooling)
+PROP_HUMIDITY: Final = "humidity"           # 3/2  — chamber humidity (%): idle ~57, spikes ~71 at start, dries to ~34
+PROP_TEMPERATURE: Final = "temperature"     # 3/3  — chamber temperature (°C): ambient ~30 idle, plateaus ~143 drying
 PROP_LID: Final = "lid"                     # 6/11 — lid/cover sensor (1=open, 0=closed)
 
 # Confirmed MIoT property table. Format: {prop_key: {"siid": X, "piid": Y}}
@@ -47,8 +47,8 @@ PROPERTY_MAPPING: Final[dict[str, dict[str, int]]] = {
     PROP_RUN_FLAG:       {"siid": 2, "piid": 10},
     PROP_TIME_REMAINING: {"siid": 2, "piid": 11},
     PROP_ENERGY:         {"siid": 3, "piid": 14},
-    PROP_TEMPERATURE:    {"siid": 3, "piid": 2},
-    PROP_TEMPERATURE_2:  {"siid": 3, "piid": 3},
+    PROP_HUMIDITY:       {"siid": 3, "piid": 2},
+    PROP_TEMPERATURE:    {"siid": 3, "piid": 3},
     PROP_LID:            {"siid": 6, "piid": 11},
 }
 
