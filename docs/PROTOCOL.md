@@ -59,12 +59,12 @@ drying cycle (2026-05-31) and a self-cleaning cycle (2026-06-01).
 | 2/2  | Lid alert | 0=ok, 1=lid open |
 | 2/3  | **Operation / mode** | **0=drying, 2=cleaning, -1=idle/stopped**; after drying ends the device pushes an additional unidentified code while cooling (run_flag stays 1, time=0) — raw value not yet captured, integration derives "cooling" |
 | 2/10 | Run flag | 1=running, 0=paused, -1=stopped |
-| 2/11 | Time remaining (min) | counts down 1/min; **frozen while paused**; 0 on stop; **360 for drying, 90 for cleaning** at fresh start |
+| 2/11 | Time remaining (min) | counts down 1/min; **frozen while paused**; 0 on stop; **360 for drying, 90 for cleaning** at fresh start. **Adaptive extension** (2026-07-10): at the nominal end the device re-evaluates — observed a clean `1 → 119` jump (load not dry yet, humidity ~25) with no other property change. Drying can exceed 360 min. |
 | 3/2  | **Chamber humidity (%)** | full-cycle capture 2026-07-10: ~57 at rest (indoor RH), spikes ~71 as the wet load heats, declines to ~34 as it dries, drifts back up (45–48) after the cycle. Streams every ~5–15 s while the device is active. |
 | 3/3  | **Chamber temperature (°C)** | same capture: ~30 idle (ambient), ramps to ~141 within 10 min of a drying start, plateaus 142–143 for the whole drying phase, falls to ~37 by the end of cooling. |
 | 3/14 | **Cumulative heater energy (Wh)** — NOT temperature | resets to 0 at cycle start; ramps ~7→3/min during heat-up, then ~1/min; climbs monotonically (saw 525 after ~5 h of drying); stays 0 during cleaning (no heater) |
 | 6/11 | Lid/cover | 1=open, 0=closed |
-| 1/65 | unknown — likely **total-cycle counter** | seen `3` on 2026-06-07 (emitted once ~25 s after a fresh start); seen `21` on 2026-07-10, re-pushed every ~15 min during a cycle. Monotonic across a month of use → counter, not config. |
+| 1/65 | unknown | seen `3` on 2026-06-07; on 2026-07-10 re-pushed every ~15 min during a cycle, drifting `21 → 20` mid-cycle — so NOT a monotonic cycle counter. Slowly-varying scalar (consumable/filter life? internal estimate?); meaning unresolved. |
 | 2/5  | unknown — **static**, likely fault code | always `0` across idle/run/pause/stop. Probably "no error". Only expected to change on a real fault. |
 
 > **Correction (2026-06-01):** Earlier we assumed `1/6` was the mode
