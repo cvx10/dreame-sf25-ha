@@ -54,6 +54,7 @@ def test_known_siid_piid_pairs():
 
 def test_mode_codes():
     assert const.MODE_CODES[0] == "drying"
+    assert const.MODE_CODES[1] == "cooling"   # captured 2026-07-09 23:59:01
     assert const.MODE_CODES[2] == "cleaning"
     assert const.MODE_CODES[-1] == "idle"
 
@@ -162,9 +163,10 @@ def test_activity_state_mapping():
     assert const.activity_state(1, 2) == "cleaning"
     assert const.activity_state(1, None) == "running"   # running, mode not yet received
     assert const.activity_state(1, -1) == "running"     # running, mode says idle (transient)
-    # 2026-07-08: post-drying the device keeps run_flag=1 with an unrecognised
-    # mode code while the barrel cools down.
-    assert const.activity_state(1, 99) == "cooling"
+    # Cooling phase confirmed as mode=1 (2026-07-09 capture); unknown codes
+    # fall back to plain "running" instead of guessing.
+    assert const.activity_state(1, 1) == "cooling"
+    assert const.activity_state(1, 99) == "running"
     # Paused
     assert const.activity_state(0, 0) == "paused"
     # Stopped / at-rest both collapse to idle

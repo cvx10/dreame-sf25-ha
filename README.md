@@ -30,7 +30,7 @@ This integration therefore:
 | Activity | sensor (enum) | derived | unified state: `drying` / `cleaning` / `cooling` / `paused` / `idle` / `running` |
 | Status | sensor (enum) | 2/1 | `running` / `idle` / `finishing` |
 | Run State | sensor (enum) | 2/10 | `running` / `paused` / `stopped` |
-| Mode | sensor (enum) | 2/3 | `drying` / `cleaning` / `idle` |
+| Mode | sensor (enum) | 2/3 | `drying` / `cooling` / `cleaning` / `idle` |
 | Program | sensor (diagnostic) | 1/6 | raw program code (e.g. `m01`) |
 | Time Remaining | sensor (min) | 2/11 | counts down; frozen while paused (drying 360, cleaning 90) |
 | Estimated Finish | sensor (timestamp) | derived | when the running cycle is expected to end |

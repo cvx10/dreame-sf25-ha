@@ -68,10 +68,13 @@ RUN_FLAG_CODES: Final = {
 
 # Operation/mode code (2/3) → human-readable name.
 # CONFIRMED: drying cycle reports 0 (360 min), cleaning cycle reports 2 (90 min),
-# idle/stopped reports -1. (Note: 1/6 stays 'm01' for both — it is NOT the operation.)
+# idle/stopped reports -1. Cooling reports 1 (captured 2026-07-09 23:59:01):
+# [(1,6,'m02'), (2,1,1), (2,3,1), (2,10,1), (2,11,0), (3,14,749), (4,4,90), (4,5,161)]
+# — and 1/6 flips m01→m02 for the cooling phase, so it IS phase-dependent.
 MODE_CODES: Final = {
     -1: "idle",
     0: "drying",
+    1: "cooling",
     2: "cleaning",
 }
 
@@ -84,8 +87,7 @@ MODE_DURATIONS: Final = {
 # Unified activity state: folds status (2/1) + run_flag (2/10) + mode (2/3) into
 # one readable value. The 2026-06-07 capture confirmed run_flag is the real
 # run-state discriminator (status is 2 for idle/paused/stopped alike).
-# 2026-07-08: after drying ends the device keeps run_flag=1 but switches mode
-# to a code outside MODE_CODES while it cools down — that phase is "cooling".
+# 2026-07-09 capture confirmed the cooling phase reports mode=1.
 ACTIVITY_STATES: Final = ["idle", "drying", "cleaning", "cooling", "paused", "running"]
 
 
@@ -96,14 +98,9 @@ def activity_state(run_flag: int | None, mode: int | None) -> str:
     Caller should only invoke this once run_flag has actually been received.
     """
     if run_flag == 1:  # running → distinguish by operation
-        if mode in (0, 2):
-            return {0: "drying", 2: "cleaning"}[mode]
-        if mode is None or mode == -1:
-            # mode not received yet (e.g. right after a restart) — can't tell.
-            return "running"
-        # Running with a mode code we don't recognise: observed post-drying
-        # while the barrel cools (raw code not yet captured; debug log will).
-        return "cooling"
+        # Unknown/missing mode codes fall back to the generic "running" rather
+        # than guessing a phase.
+        return {0: "drying", 1: "cooling", 2: "cleaning"}.get(mode, "running")
     if run_flag == 0:
         return "paused"
     # run_flag -1 (stopped) and the at-rest baseline are indistinguishable.
