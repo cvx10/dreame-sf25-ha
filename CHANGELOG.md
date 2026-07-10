@@ -4,6 +4,62 @@ All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/);
 this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.6.4] — 2026-07-10
+
+### Fixed
+- **Estimated Finish survives a mid-cycle HA restart.** The run flag (`2/10`)
+  is only pushed on transitions, so after a restart the coordinator never sees
+  it again until the next start/stop. The finish sensor treated the missing
+  flag as "not running" and stayed `unknown` for the rest of the cycle. Now
+  only an explicitly non-running flag hides the finish time.
+- **Estimated Finish re-anchors when the countdown holds.** Adaptive drying
+  freezes `2/11` while the load is still humid, which let the stored finish
+  timestamp drift into the past. The value is recomputed whenever it deviates
+  more than 5 min from `now + remaining`, while staying stable across the
+  normal once-a-minute ticks.
+
+## [0.6.3] — 2026-07-10
+
+### Added
+- **Cooling mode code confirmed (`2/3` = `1`).** Captured the drying→cooling
+  transition: mode flips to `1`, program `1/6` flips `m01` → `m02`, status and
+  run flag stay `1`. `MODE_CODES` now maps `1` → `cooling`; unknown codes fall
+  back to `running` instead of guessing `cooling`.
+- Two new cooling-related service-4 properties documented: `4/4` = 90
+  (plausibly planned cooling minutes) and `4/5` = 161 (unknown).
+
+### Documentation
+- Reliability caveat: a drying phase can end early with no transition push
+  (countdown frozen, heater off) — state sensors stay stale until the next
+  pushed transition.
+- `docs/PROTOCOL.md`: drying is humidity-driven and adaptive in both
+  directions — the device targets a dryness threshold on `3/2`, not a fixed
+  duration (`2/11` observed jumping 1 → 119, and finishing early at 55).
+  `1/65` drifted mid-cycle, ruling out the total-cycle-counter hypothesis.
+
+## [0.6.2] — 2026-07-10
+
+### Changed
+- **`3/2` is humidity (%), `3/3` is chamber temperature (breaking).** A full
+  drying-cycle capture settled the tentative v0.6.1 labels: `3/3` ramps
+  30→141 °C and plateaus at 142–143 during drying; `3/2` follows a
+  relative-humidity curve (~57 idle, ~71 wet-load peak, ~34 when dry). The
+  Temperature entity keeps its id but now sources `3/3`; the former
+  `temperature_2` entity is replaced by a Humidity sensor on `3/2`.
+
+### Documentation
+- Dashboard popup: cooling branches in the header and a snowflake progress row
+  during the post-drying cooling phase.
+
+## [0.6.1] — 2026-07-08
+
+### Added
+- **`cooling` activity state.** After drying ends the device keeps
+  `run_flag=1` while the barrel cools; `activity_state()` maps running with an
+  unrecognised mode to `cooling`.
+- Tentative Temperature / Temperature 2 sensors on the previously unmapped
+  `3/2` and `3/3` properties (relabelled in v0.6.2).
+
 ## [0.6.0] — 2026-06-11
 
 ### Changed
