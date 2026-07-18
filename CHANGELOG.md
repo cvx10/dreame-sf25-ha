@@ -4,6 +4,16 @@ All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/);
 this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.6.5] — 2026-07-18
+
+### Fixed
+- **Cycle Progress shows 100% during the cooling phase.** When the countdown
+  reaches 0 the device flips mode (`2/3`) to cooling while the run flag stays
+  `1`; the progress sensor treated the zero countdown as "no active cycle" and
+  went `unknown` for the whole cooling phase. It now reports 100% until the
+  device actually goes idle. An absent run flag (mid-cycle HA restart) is
+  treated as running, matching the Estimated Finish sensor.
+
 ## [0.6.4] — 2026-07-10
 
 ### Fixed

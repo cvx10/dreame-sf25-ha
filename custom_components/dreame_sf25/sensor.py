@@ -263,6 +263,16 @@ class DreameSF25ProgressSensor(_BaseSF25Sensor):
             return _MISSING
         remaining = data[PROP_TIME_REMAINING]
         if remaining is None or remaining <= 0:
+            # During the cooling phase the countdown is already at 0 (2/11
+            # stays 0 while 2/3 flips to cooling): the cycle work is done, so
+            # report 100% instead of unknown until the device goes idle. The
+            # run flag is only pushed on transitions, so treat absent as
+            # running (same rationale as the finish sensor).
+            if (
+                MODE_CODES.get(data.get(PROP_MODE)) == "cooling"
+                and data.get(PROP_RUN_FLAG, 1) == 1
+            ):
+                return 100
             return None  # no active cycle (property present but zero)
         # Pick the full duration for the current operation (drying=360, cleaning=90),
         # falling back to the default. This keeps progress accurate per mode.
