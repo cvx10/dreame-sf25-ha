@@ -67,6 +67,22 @@ directory and restart.
 Enter your **DreameHome** email, password and country code (e.g. `DE`), then pick
 your device from the list.
 
+### Replacing the composter
+
+The DreameHome device id (`did`) identifies the physical unit, and it is stored
+in the config entry. A replacement unit — warranty swap, second-hand, factory
+reset re-binding — therefore gets a **different** `did`, and the integration
+keeps talking to a device that is no longer on the account.
+
+The symptom is quiet: every entity keeps showing its last restored value and
+simply never updates again, because this is a push-only integration and no MQTT
+message ever arrives. Home Assistant reports no error until the next restart,
+at which point setup fails with *Device &lt;did&gt; not found on account*.
+
+The fix is *Settings → Devices & Services → Dreame SF25 → **Reconfigure***, then
+pick the new unit. Entities and their history are preserved; the password field
+may be left blank to keep the stored one.
+
 ## Discovery / development tools
 
 The `tools/` directory contains the scripts used to reverse-engineer the device.

@@ -4,6 +4,34 @@ All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/);
 this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.7.0] — 2026-08-27
+
+### Added
+- **Reconfigure flow.** An existing entry can now be re-pointed at another
+  composter on the same DreameHome account, from Settings > Devices &
+  services > Dreame SF25 > Reconfigure. This is what a warranty replacement
+  needs: the new unit gets a different DreameHome `did`, and the `did` is
+  stored in the entry data (it is also the entry's `unique_id`). Previously
+  the only fix was to delete and re-add the integration, which destroyed every
+  entity and its recorded history. The password may be left blank to keep the
+  stored one.
+- English translations (`translations/en.json`), so the config and reconfigure
+  forms show real labels instead of raw keys.
+
+### Changed
+- The "device not found on account" setup error now says how many devices the
+  account does have and points at the reconfigure flow. Symptom of a silent
+  replacement: entities keep showing their last restored values and never
+  update, because the configured `did` no longer exists.
+- The device registry is reconciled on setup. Entities are keyed on the entry_id
+  and the device on the `did`, so after a reconfigure the device no longer
+  matches. The existing device entry is renamed onto the new `did` where that is
+  unambiguous, which preserves its registry id and therefore its area, its
+  user-chosen name and its labels; a delete/recreate loses all three silently.
+  Anything still stale is detached from the entry.
+- `hacs.json` minimum Home Assistant version raised to 2024.11.0, the release
+  that introduced the reconfigure flow helpers.
+
 ## [0.6.5] — 2026-07-18
 
 ### Fixed
