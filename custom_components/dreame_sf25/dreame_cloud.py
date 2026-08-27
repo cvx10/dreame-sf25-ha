@@ -38,6 +38,12 @@ _PASSWORD_SALT = "RAylYC%fmSKp7%Tq"
 # Static dreame-rlc header (AES-128-ECB of "eu|en|DE" with key "EETjszu*XI5znHsI")
 _RLC_HEADER = "7787607c258cdd79141ec1866eb5476c"
 
+# Maximum MIoT properties the cloud will accept in a single get_properties call.
+# Measured against a dreame.fwd.u2527 on 2026-08-27: 16 succeeds, 17 and above
+# come back as code 80001 — the same code the cloud uses for an unreachable
+# device, which makes an oversized request look exactly like a sleeping one.
+_MAX_PROPERTIES_PER_REQUEST = 16
+
 
 def _hash_password(password: str) -> str:
     """MD5 hash of password + salt, as required by DreameHome auth."""
@@ -90,6 +96,9 @@ class DreameCloudClient:
         self._logged_in: bool = False
         self._uid: str | None = None  # User ID from login (needed for MQTT)
         self._session_data: dict = {}  # Full login response
+        # DID spellings the account has rejected outright (code 80002); see
+        # _send_command. Cached per client so a wrong form is tried only once.
+        self._bad_did_forms: set[str] = set()
 
     # ------------------------------------------------------------------
     # Authentication
@@ -254,6 +263,10 @@ class DreameCloudClient:
         except ValueError:
             pass
 
+        remaining = [d for d in did_variants if d not in self._bad_did_forms]
+        # Never leave ourselves with nothing to try.
+        did_variants = remaining or did_variants[:1]
+
         for attempt in range(retry + 1):
             for d in did_variants:
                 request_id = random.randint(1000, 9999)
@@ -287,14 +300,24 @@ class DreameCloudClient:
 
                 code = data.get("code")
                 if code == 80001:
-                    # Timeout: device not reachable via cloud MQTT right now.
-                    # This means the device is in sleep mode — physically press
-                    # the power button to wake it, then retry.
+                    # The cloud reuses 80001 for two unrelated situations: the
+                    # device is asleep and did not answer, or the request itself
+                    # was refused for being too large (see
+                    # _MAX_PROPERTIES_PER_REQUEST). Do not assume the first.
                     _LOGGER.warning(
-                        "Device offline/sleeping (code 80001, did=%s attempt=%d/%d). "
-                        "Press the physical power button on the SF25 to wake it.",
-                        d, attempt + 1, retry + 1,
+                        "No answer from the device (code 80001, did=%s attempt=%d/%d). "
+                        "Either the SF25 is asleep — press its physical power button — "
+                        "or the request exceeded %d properties.",
+                        d, attempt + 1, retry + 1, _MAX_PROPERTIES_PER_REQUEST,
                     )
+                elif code == 80002:
+                    # "user device authorization error": this DID form is not the
+                    # one the account is bound to. Retrying it only adds latency
+                    # and log noise, so drop it for the rest of the session.
+                    _LOGGER.debug(
+                        "DID form %s rejected by the account (code 80002), dropping it", d
+                    )
+                    self._bad_did_forms.add(d)
                 else:
                     _LOGGER.warning("sendCommand error code %s (did=%s): %s", code, d, data)
                 # Try next DID variant before giving up
@@ -307,11 +330,14 @@ class DreameCloudClient:
         properties: list of {"siid": X, "piid": Y}
         Returns list of {"siid": X, "piid": Y, "value": V, "code": 0}
         """
-        params = [{"did": did, "siid": p["siid"], "piid": p["piid"]} for p in properties]
-        result = self._send_command(did, "get_properties", params)
-        if result and "result" in result:
-            return result["result"]
-        return []
+        collected: list[dict] = []
+        for i in range(0, len(properties), _MAX_PROPERTIES_PER_REQUEST):
+            chunk = properties[i : i + _MAX_PROPERTIES_PER_REQUEST]
+            params = [{"did": did, "siid": p["siid"], "piid": p["piid"]} for p in chunk]
+            result = self._send_command(did, "get_properties", params)
+            if result and "result" in result:
+                collected.extend(result["result"])
+        return collected
 
     def set_property(self, did: str, siid: int, piid: int, value: Any) -> bool:
         """Write a single MIoT property. Returns True on success."""
@@ -333,7 +359,7 @@ class DreameCloudClient:
     def probe_all_properties(self, did: str, max_siid: int = 10, max_piid: int = 20) -> dict:
         """
         Brute-force scan all (siid, piid) combinations to discover device properties.
-        Sends batches of 50 at a time.
+        Requests are split by get_properties() into chunks the cloud accepts.
         Returns dict keyed by (siid, piid) with {"value": V, "code": C}.
         """
         all_props = [
@@ -343,7 +369,7 @@ class DreameCloudClient:
         ]
 
         results: dict[tuple[int, int], dict] = {}
-        batch_size = 50
+        batch_size = _MAX_PROPERTIES_PER_REQUEST
 
         for i in range(0, len(all_props), batch_size):
             chunk = all_props[i : i + batch_size]

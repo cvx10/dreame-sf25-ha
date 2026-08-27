@@ -52,6 +52,11 @@ class DreameSF25Coordinator(DataUpdateCoordinator[dict[str, Any]]):
             or "Dreame SF25"
         )
         self.model_id = device.get("model", "dreame.fwd.u2527")
+        # Firmware build as the cloud reports it (e.g. "1.8.14_1005"). The device
+        # itself only exposes the trailing build number over MIoT (1/4 -> "1005"),
+        # and there is no OTA property at all, so the cloud record is the only
+        # place the full version string exists.
+        self.firmware_version = device.get("ver")
         self._mqtt: DreameMqttClient | None = None
         # Whether the MQTT link is currently up. Entities expose this as their
         # availability: while the link is down we genuinely don't know the

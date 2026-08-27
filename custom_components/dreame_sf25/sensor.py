@@ -194,6 +194,7 @@ class _BaseSF25Sensor(CoordinatorEntity[DreameSF25Coordinator], RestoreSensor):
             "manufacturer": MANUFACTURER,
             "model": MODEL,
             "model_id": coordinator.model_id,
+            "sw_version": coordinator.firmware_version,
         }
 
     async def async_added_to_hass(self) -> None:

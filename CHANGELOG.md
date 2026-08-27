@@ -4,6 +4,29 @@ All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/);
 this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.7.1] — 2026-08-27
+
+### Fixed
+- **Property reads are chunked to 16 per request.** Above that the DreameHome
+  cloud refuses the call with code `80001` — the *same* code it returns for a
+  device that is asleep, so an oversized request was indistinguishable from an
+  unreachable one. Measured on a `dreame.fwd.u2527`: 16 properties succeed, 17
+  and above fail, with the device demonstrably awake and answering single reads
+  in the same minute. `probe_all_properties()` sent batches of **50**, so
+  `tools/discover.py` could never complete a scan and always blamed sleep mode.
+- **The 80001 warning no longer asserts the device is asleep**, since it cannot
+  tell the two causes apart. It names both.
+- **A DID spelling rejected with code 80002** (`用户设备授权错误`) is remembered and
+  skipped for the rest of the session. `_send_command` tries the DID in both
+  signed and unsigned 32-bit form; on an account bound to only one of them, the
+  other failed on every attempt of every retry, adding latency and log noise.
+
+### Added
+- The firmware version is exposed on the Home Assistant device (`sw_version`,
+  e.g. `1.8.14_1005`), taken from the cloud device record. The device itself
+  only reports the trailing build number over MIoT (`1/4` -> `1005`) and exposes
+  no OTA property at all, so the cloud record is the only source for it.
+
 ## [0.7.0] — 2026-08-27
 
 ### Added
